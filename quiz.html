@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLOWMOTION · 找到专属你的课程</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=IBM+Plex+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090b;--s1:#111114;--s2:#18181c;--s3:#1f1f26;
+  --border:#252530;--border2:#30303e;
+  --accent:#d4f542;--ad:rgba(212,245,66,.1);--ad2:rgba(212,245,66,.18);
+  --a2:#42e0f5;--a2d:rgba(66,224,245,.08);
+  --warn:#f5a842;--wand:rgba(245,168,66,.1);
+  --success:#42f5aa;--sucd:rgba(66,245,170,.08);
+  --text:#e2e2e8;--muted:#5e5e70;--muted2:#3a3a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Noto Sans SC',sans-serif;font-weight:300;
+  min-height:100vh;overflow-x:hidden;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 35% at 75% 15%,rgba(212,245,66,.04) 0%,transparent 60%),
+    radial-gradient(ellipse 35% 45% at 15% 85%,rgba(66,224,245,.03) 0%,transparent 55%);
+}
+
+/* ── APP SHELL ── */
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 20px 100px;}
+
+/* ── HEADER ── */
+header{padding:44px 0 32px;border-bottom:1px solid var(--border);margin-bottom:0;}
+.brand{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--accent);margin-bottom:10px;}
+header h1{font-family:'Noto Serif SC',serif;font-size:clamp(20px,4vw,32px);font-weight:900;line-height:1.25;}
+header h1 em{color:var(--accent);font-style:normal;}
+.h-sub{font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:6px;}
+
+/* ── PROGRESS ── */
+.prog-wrap{padding:16px 0 0;margin-bottom:0;}
+.prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.prog-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;}
+.prog-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);}
+.prog-bar{height:2px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+
+/* ── STEP DOTS ── */
+.dots{display:flex;align-items:center;gap:0;padding:20px 0 8px;overflow-x:auto;}
+.dots::-webkit-scrollbar{height:2px;}
+.dots::-webkit-scrollbar-thumb{background:var(--border2);}
+.dot-item{display:flex;align-items:center;flex-shrink:0;}
+.dot{
+  width:24px;height:24px;border-radius:50%;
+  border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;
+  color:var(--muted);transition:all .3s;
+}
+.dot.done{background:var(--accent);border-color:var(--accent);color:#000;font-size:10px;}
+.dot.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--ad);}
+.dot-line{width:20px;height:1px;background:var(--border2);transition:background .3s;}
+.dot-line.done{background:var(--accent);}
+
+/* ── SUMMARY BAR ── */
+.sumbar{
+  display:flex;flex-wrap:wrap;gap:6px;
+  padding:10px 14px;margin:16px 0 0;
+  background:var(--s1);border:1px solid var(--border);border-radius:5px;
+  min-height:40px;
+}
+.tag{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--s3);border:1px solid var(--border2);
+  border-radius:3px;padding:3px 8px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);
+}
+.tag span{color:var(--text);font-weight:500;}
+.tag.hi{border-color:rgba(212,245,66,.3);color:var(--accent);}
+
+/* ── QUESTION ── */
+.q-wrap{animation:fadeUp .35s ease both;padding-top:28px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.q-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.q-title{font-family:'Noto Serif SC',serif;font-size:clamp(17px,3vw,24px);font-weight:700;margin-bottom:6px;line-height:1.3;}
+.q-sub{font-size:12px;color:var(--muted);margin-bottom:22px;line-height:1.6;}
+
+/* ── OPTION GRID ── */
+.og{display:grid;gap:10px;}
+.og.c1{grid-template-columns:1fr;}
+.og.c2{grid-template-columns:1fr 1fr;}
+.og.c3{grid-template-columns:repeat(3,1fr);}
+@media(max-width:500px){.og.c3{grid-template-columns:1fr 1fr;}.og.c2{grid-template-columns:1fr 1fr;}}
+@media(max-width:360px){.og.c2,.og.c3{grid-template-columns:1fr;}}
+
+.oc{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:6px;padding:16px 18px;
+  cursor:pointer;transition:all .18s;position:relative;
+  overflow:hidden;user-select:none;
+}
+.oc::before{content:'';position:absolute;inset:0;background:var(--ad);opacity:0;transition:opacity .18s;}
+.oc:hover{border-color:var(--border2);transform:translateY(-1px);}
+.oc:hover::before{opacity:1;}
+.oc.sel{border-color:var(--accent);background:var(--s2);}
+.oc.sel::before{opacity:1;}
+.oc-chk{
+  position:absolute;top:10px;right:10px;
+  width:16px;height:16px;border-radius:50%;
+  border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;color:transparent;transition:all .2s;
+}
+.oc.sel .oc-chk{background:var(--accent);border-color:var(--accent);color:#000;}
+.oc-icon{font-size:20px;margin-bottom:6px;display:block;line-height:1;}
+.oc-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.oc-desc{font-size:11px;color:var(--muted);line-height:1.45;}
+
+/* ── NAV ── */
+.nav{display:flex;gap:10px;margin-top:26px;align-items:center;}
+.btn-b{
+  background:none;border:1px solid var(--border2);color:var(--muted);
+  border-radius:4px;padding:12px 18px;
+  font-family:'Noto Sans SC',sans-serif;font-size:13px;
+  cursor:pointer;transition:all .18s;
+}
+.btn-b:hover{border-color:var(--border);color:var(--text);}
+
+/* ── RESULT ── */
+.r-hero{
+  margin-top:28px;padding:28px;
+  background:var(--s1);border:1px solid var(--border);
+  border-top:3px solid var(--accent);
+  animation:fadeUp .4s ease both;
+}
+.r-hero-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.r-hero h2{font-family:'Noto Serif SC',serif;font-size:clamp(18px,3.5vw,28px);font-weight:900;margin-bottom:10px;line-height:1.3;}
+.r-hero p{font-size:13px;color:var(--muted);line-height:1.7;max-width:520px;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;}
+.pill{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--s3);border:1px solid rgba(212,245,66,.25);
+  border-radius:3px;padding:4px 9px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);
+}
+
+.sec-h{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--muted);
+  margin:32px 0 14px;display:flex;align-items:center;gap:10px;
+}
+.sec-h::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* INSIGHT */
+.ins{
+  background:var(--ad);border:1px solid rgba(212,245,66,.15);
+  border-radius:5px;padding:18px 22px;margin-bottom:12px;
+  animation:fadeUp .4s ease both;
+}
+.ins-t{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.ins p{font-size:13px;color:#bbb;line-height:1.7;}
+.ins strong{color:var(--accent);}
+
+/* COURSE CARD */
+.cc{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:6px;padding:18px 20px;
+  display:flex;align-items:flex-start;gap:14px;
+  margin-bottom:10px;animation:fadeUp .4s ease both;
+  transition:border-color .18s;
+}
+.cc:hover{border-color:var(--border2);}
+.cc.pri{border-color:rgba(212,245,66,.3);background:linear-gradient(120deg,var(--s2) 0%,var(--s1) 100%);}
+.cc-badge{
+  flex-shrink:0;width:38px;height:38px;border-radius:4px;
+  background:var(--s3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.cc.pri .cc-badge{background:var(--ad2);border-color:rgba(212,245,66,.3);}
+.cc-info{flex:1;min-width:0;}
+.cc-name{font-size:14px;font-weight:700;margin-bottom:3px;}
+.cc-coach{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:1px;margin-bottom:5px;}
+.cc-why{font-size:12px;color:var(--muted);line-height:1.55;}
+.cc-time{
+  flex-shrink:0;text-align:right;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);
+  line-height:1.7;min-width:80px;
+}
+
+/* PACKAGE */
+.pkg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;}
+.pkg{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:6px;padding:18px;text-align:center;
+  animation:fadeUp .4s ease both;
+}
+.pkg.hi{border-color:var(--accent);position:relative;}
+.pkg.hi::before{
+  content:'首选';position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#000;
+  font-size:9px;font-weight:700;font-family:'IBM Plex Mono',monospace;
+  padding:2px 10px;letter-spacing:1px;white-space:nowrap;
+}
+.pkg-icon{font-size:22px;margin-bottom:8px;}
+.pkg-name{font-size:13px;font-weight:700;margin-bottom:5px;}
+.pkg-d{font-size:11px;color:var(--muted);line-height:1.55;}
+.pkg-tag{
+  display:inline-block;margin-top:8px;
+  background:var(--s3);border:1px solid var(--border2);
+  border-radius:3px;padding:2px 7px;
+  font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;
+}
+
+/* WARN/SUCCESS */
+.wbox{background:var(--wand);border:1px solid rgba(245,168,66,.2);border-radius:5px;padding:14px 18px;margin:14px 0;font-size:12px;color:#bbb;line-height:1.6;}
+.wbox .wt{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--warn);margin-bottom:5px;}
+.sbox{background:var(--sucd);border:1px solid rgba(66,245,170,.2);border-radius:5px;padding:14px 18px;margin:14px 0;font-size:12px;color:#bbb;line-height:1.6;}
+.sbox .st{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--success);margin-bottom:5px;}
+.sbox strong{color:var(--success);}
+
+/* RESTART */
+.restart{
+  margin-top:32px;background:none;border:1px solid var(--border2);color:var(--muted);
+  border-radius:4px;padding:11px 20px;cursor:pointer;transition:all .18s;
+  font-family:'Noto Sans SC',sans-serif;font-size:13px;
+}
+.restart:hover{border-color:var(--border);color:var(--text);}
+
+/* ── INTRO PAGE ── */
+.intro{animation:fadeUp .5s ease both;}
+.intro-section{margin-bottom:40px;}
+.intro-sec-title{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.intro-sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Coach cards */
+.coach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:560px){.coach-grid{grid-template-columns:1fr;}}
+.coach-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:6px;
+  padding:22px 18px;text-align:center;
+}
+.coach-avatar{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--s3);border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin:0 auto 12px;
+}
+.coach-name{
+  font-family:'Noto Serif SC',serif;font-size:16px;font-weight:700;
+  margin-bottom:4px;color:var(--text);
+}
+.coach-role{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;
+  color:var(--accent);margin-bottom:10px;text-transform:uppercase;
+}
+.coach-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+.coach-tags{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:10px;}
+.coach-tag{
+  background:var(--s3);border:1px solid var(--border2);
+  border-radius:3px;padding:2px 8px;
+  font-size:10px;color:var(--muted);
+}
+
+/* Course grid */
+.course-intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:480px){.course-intro-grid{grid-template-columns:1fr;}}
+.ci-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:6px;
+  padding:16px 18px;display:flex;align-items:flex-start;gap:12px;
+}
+.ci-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.ci-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.ci-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.ci-coach{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--accent);
+  margin-top:4px;letter-spacing:.5px;
+}
+
+/* Equipment row */
+.equip-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.eq-item{
+  display:flex;align-items:center;gap:6px;
+  background:var(--s1);border:1px solid var(--border);border-radius:4px;
+  padding:8px 12px;font-size:12px;color:var(--muted);
+}
+.eq-item span{font-size:16px;}
+
+/* Functional tools */
+.func-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:520px){.func-grid{grid-template-columns:1fr 1fr;}}
+.func-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:6px;
+  padding:14px 12px;text-align:center;
+}
+.func-icon{font-size:22px;margin-bottom:6px;}
+.func-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.func-desc{font-size:10px;color:var(--muted);line-height:1.4;}
+
+/* Start button */
+.start-wrap{
+  padding:32px 0 8px;text-align:center;
+}
+.btn-start{
+  background:var(--accent);color:#000;border:none;border-radius:4px;
+  padding:15px 40px;font-family:'Noto Serif SC',serif;
+  font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;
+  letter-spacing:.5px;
+}
+.btn-start:hover{background:#c5e830;transform:translateY(-2px);box-shadow:0 8px 24px rgba(212,245,66,.2);}
+.start-hint{font-size:11px;color:var(--muted);margin-top:10px;font-family:'IBM Plex Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="brand">FLOWMOTION 浮落动作工坊</div>
+  <h1>找到<em>专属你的</em>课程</h1>
+  <div class="h-sub">几个问题，找到最适合你的起点</div>
+</header>
+
+<div class="prog-wrap" id="progWrap" style="display:none">
+  <div class="prog-row">
+    <span class="prog-label">完成进度</span>
+    <span class="prog-num" id="progNum">0 / 8</span>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+</div>
+
+<div class="dots" id="dots" style="display:none"></div>
+
+<div id="root"></div>
+
+</div>
+<script>
+// ═══════════════════════════════════════
+// STEP DATA — 10 questions
+// ═══════════════════════════════════════
+const STEPS = [
+  {
+    id:'gender', tag:'01 / 11',
+    title:'你的性别',
+    sub:'',
+    cols:'c2',
+    opts:[
+      {v:'f',i:'👩',l:'女性'},
+      {v:'m',i:'👨',l:'男性'},
+    ]
+  },
+  {
+    id:'age', tag:'02 / 11',
+    title:'你的年龄段',
+    sub:'',
+    cols:'c2',
+    opts:[
+      {v:'u25',i:'🌱',l:'18–25岁'},
+      {v:'26',i:'⚡',l:'26–35岁'},
+      {v:'36',i:'🔥',l:'36–45岁'},
+      {v:'45p',i:'🌿',l:'45岁以上'},
+    ]
+  },
+  {
+    id:'goal', tag:'03 / 11',
+    title:'你最想改变的是什么？',
+    sub:'选最符合你现在心里想法的那个。',
+    cols:'c2',
+    opts:[
+      {v:'fat',i:'🔥',l:'减脂变紧致',d:'消除松软，穿衣好看，有线条感'},
+      {v:'shape',i:'💪',l:'增肌塑形',d:'力量感，有型，围度变化'},
+      {v:'posture',i:'🧘',l:'体态改善',d:'含胸/驼背/腰背不适'},
+      {v:'health',i:'🌱',l:'健康解压',d:'整体状态好，释放压力和焦虑'},
+    ]
+  },
+  {
+    id:'body', tag:'04 / 11',
+    title:'你对自己身体现在的感受',
+    sub:'不用精确，选最接近的那个。',
+    cols:'c2',
+    opts:[
+      {v:'ok',i:'😊',l:'挺满意，想再好一点'},
+      {v:'local',i:'🤔',l:'整体OK，局部有些松垮'},
+      {v:'loose',i:'😕',l:'明显感觉松，没什么线条'},
+      {v:'bad',i:'😣',l:'比较困扰，影响到日常状态'},
+    ]
+  },
+  {
+    id:'pain', tag:'05 / 11',
+    title:'身体有没有这些不适？',
+    sub:'如实选，会影响课程推荐方向。',
+    cols:'c2',
+    opts:[
+      {v:'neck',i:'😤',l:'颈椎/肩膀紧张'},
+      {v:'back',i:'🔻',l:'腰背酸痛'},
+      {v:'knee',i:'🦵',l:'膝盖/关节不适'},
+      {v:'none',i:'✨',l:'没有特别不适'},
+    ]
+  },
+  {
+    id:'injury', tag:'06 / 11',
+    title:'有没有需要特别注意的部位？',
+    sub:'比如做过手术、受过伤、医生叮嘱不能做某些动作。',
+    cols:'c2',
+    opts:[
+      {v:'no',i:'✅',l:'没有'},
+      {v:'upper',i:'🦾',l:'上肢/肩颈/手腕'},
+      {v:'lower',i:'🦿',l:'腰椎/膝盖/踝关节'},
+      {v:'multi',i:'⚠️',l:'多处需要注意'},
+    ]
+  },
+  {
+    id:'exp', tag:'07 / 11',
+    title:'你的运动习惯是？',
+    sub:'如实选就好，零基础是最正常的起点。',
+    cols:'c2',
+    opts:[
+      {v:'none',i:'🐣',l:'从来没练过'},
+      {v:'casual',i:'🚶',l:'偶尔运动'},
+      {v:'gym',i:'🏋️',l:'去过健身房，但没坚持'},
+      {v:'regular',i:'⚡',l:'有规律训练'},
+    ]
+  },
+  {
+    id:'life', tag:'08 / 11',
+    title:'你平时的状态更接近哪个？',
+    sub:'',
+    cols:'c2',
+    opts:[
+      {v:'sit',i:'🖥️',l:'久坐为主，精力还OK'},
+      {v:'tired',i:'😪',l:'容易疲惫，下班没什么力气'},
+      {v:'stress',i:'😤',l:'压力比较大，需要出口'},
+      {v:'free',i:'☕',l:'时间相对自由'},
+    ]
+  },
+  {
+    id:'job', tag:'09 / 11',
+    title:'你的工作类型',
+    sub:'',
+    cols:'c2',
+    opts:[
+      {v:'office',i:'💻',l:'办公室/久坐为主'},
+      {v:'physical',i:'🔧',l:'体力工作'},
+      {v:'service',i:'🛎️',l:'服务/零售行业'},
+      {v:'home',i:'🏠',l:'在家/灵活安排'},
+    ]
+  },
+  {
+    id:'time', tag:'10 / 11',
+    title:'你最方便来的时间段',
+    sub:'我们每天 9:00–20:00 都有课，找到你最稳定的那个窗口。',
+    cols:'c2',
+    opts:[
+      {v:'morning',i:'🌅',l:'早上',d:'09:00 – 10:55'},
+      {v:'noon',i:'☀️',l:'中午',d:'11:00 – 12:55'},
+      {v:'evening',i:'🌆',l:'傍晚 / 下班后',d:'17:00 – 19:55'},
+      {v:'weekend',i:'🗓️',l:'主要周末',d:'周六 / 周日'},
+    ]
+  },
+  {
+    id:'freq', tag:'11 / 11',
+    title:'你希望每周来几次？',
+    sub:'诚实选就好，没有对错。',
+    cols:'c2',
+    opts:[
+      {v:'1',i:'🌱',l:'每周1次'},
+      {v:'2',i:'⚡',l:'每周2次'},
+      {v:'3',i:'🔥',l:'每周3次'},
+      {v:'4p',i:'💎',l:'每周4次以上'},
+    ]
+  },
+];
+
+// ═══════════════════════════════════════
+// COURSE DATABASE
+// ═══════════════════════════════════════
+const C = {
+  fat_cardio:{n:'燃脂循环',b:'🔥',coach:'上官 / momo',
+    time:{morning:'—',noon:'11:00 周六',evening:'19:00 周一 / 18:00 周三',weekend:'11:00 周六/日'},
+    why:'力量+有氧结合，单节消耗比纯跑步高，不伤膝盖，零基础友好。'},
+  kb_cardio:{n:'壶铃心肺减脂',b:'🫀',coach:'上官 / momo',
+    time:{morning:'—',noon:'12:00 周二/五',evening:'19:00 周三',weekend:'12:00 周日'},
+    why:'壶铃摇摆全身发力，提升基础代谢，减脂同时建立核心力量。'},
+  kb_iron:{n:'壶铃铁血有氧',b:'⚔️',coach:'徐一斐',
+    time:{morning:'09:00 周四',noon:'—',evening:'—',weekend:'—'},
+    why:'高强度有氧代谢训练，适合有一定基础的减脂进阶者，挑战心肺上限。'},
+  bar_shape:{n:'棒铃力量塑形',b:'⚙️',coach:'上官',
+    time:{morning:'—',noon:'11:00 周二',evening:'17:00 周三',weekend:'12:00 周日'},
+    why:'系统力量训练，塑造肌肉围度，提高静息代谢，体型改变最直观的课程之一。'},
+  kb_shape:{n:'壶铃力量塑形',b:'💎',coach:'上官',
+    time:{morning:'10:00 周四',noon:'—',evening:'17:00 周二',weekend:'—'},
+    why:'三维空间训练，塑造功能性肌肉，不只是大，还有协调性和爆发力。'},
+  hammer:{n:'锤铃力量塑形',b:'🔨',coach:'上官',
+    time:{morning:'—',noon:'11:00 周四',evening:'17:00 周一',weekend:'—'},
+    why:'锤铃不对称负荷训练，对核心稳定性和单侧力量发展效果突出。'},
+  bodyweight:{n:'自重流动',b:'🌊',coach:'momo',
+    time:{morning:'10:00 周一/三',noon:'—',evening:'18:00 周二',weekend:'—'},
+    why:'用自体重为阻力，建立正确动作模式，零基础入门最友好的选择。'},
+  stretch:{n:'伸展放松',b:'🧘',coach:'momo',
+    time:{morning:'—',noon:'11:00 周三',evening:'—',weekend:'12:00 周六'},
+    why:'针对肌肉失衡和体态问题，系统性松解和重建，不是简单拉筋。'},
+  power_cycle:{n:'力量循环',b:'⚡',coach:'上官 / momo',
+    time:{morning:'11:00 周一',noon:'—',evening:'19:00 周四',weekend:'11:00 周日'},
+    why:'循环结构兼顾力量和心肺，有基础者突破平台期的理想选择。'},
+  mace:{n:'权杖流',b:'🔱',coach:'momo',
+    time:{morning:'—',noon:'—',evening:'18:00 周一',weekend:'—'},
+    why:'旋转力学独特，深度激活肩袖和脊柱旋转，久坐族改善肩颈的专项。'},
+  indian:{n:'印第安棒',b:'🏏',coach:'上官',
+    time:{morning:'10:00 周二',noon:'—',evening:'17:00 周五',weekend:'—'},
+    why:'改善肩关节灵活度和腕部控制，消除职业性颈肩紧张，有训练趣味性。'},
+  rope:{n:'绳流',b:'🌀',coach:'徐一斐',
+    time:{morning:'09:00 周五',noon:'—',evening:'17:00 周四',weekend:'—'},
+    why:'全身协调性+有氧，释放压力效果极好，是解压型会员评分最高的课程。'},
+  barflow:{n:'棒铃流动',b:'🌙',coach:'momo',
+    time:{morning:'—',noon:'—',evening:'19:00 周二/五',weekend:'—'},
+    why:'棒铃节奏流动训练，改善全身协调和灵活性，减压同时提升体感。'},
+  qd:{n:'壶铃QD',b:'🎯',coach:'徐一斐',
+    time:{morning:'09:00 周二',noon:'—',evening:'—',weekend:'—'},
+    why:'Quick Draw快拉技术，壶铃进阶必修课，爆发力和协调性同步提升。'},
+  private:{n:'私教课 · 力量专项',b:'🏆',coach:'上官 / 徐一斐',
+    time:{morning:'预约制',noon:'预约制',evening:'预约制',weekend:'预约制'},
+    why:'史密斯架/龙门架/哑铃系统化周期训练，增肌塑形效果最佳，有详细计划。'},
+};
+
+// ═══════════════════════════════════════
+// RECOMMENDATION ENGINE
+// ═══════════════════════════════════════
+function getRecs(p){
+  let r=[];
+
+  if(p.goal==='fat'){
+    if(p.exp==='none'||p.exp==='casual'){
+      r=['fat_cardio','kb_cardio','bodyweight','stretch'];
+    } else if(p.exp==='gym'){
+      r=['fat_cardio','kb_cardio','power_cycle','bar_shape'];
+    } else {
+      r=['kb_iron','power_cycle','fat_cardio','kb_shape'];
+    }
+  }
+  else if(p.goal==='shape'){
+    if(p.exp==='regular'){
+      r=['private','bar_shape','kb_shape','qd'];
+    } else if(p.exp==='gym'){
+      r=['bar_shape','kb_shape','hammer','power_cycle'];
+    } else {
+      r=['bar_shape','fat_cardio','bodyweight','power_cycle'];
+    }
+  }
+  else if(p.goal==='posture'){
+    if(p.pain==='neck'){
+      r=['stretch','mace','indian','bodyweight'];
+    } else if(p.pain==='back'){
+      r=['stretch','bodyweight','mace','bar_shape'];
+    } else if(p.pain==='knee'){
+      r=['stretch','bodyweight','fat_cardio','barflow'];
+    } else {
+      r=['stretch','bodyweight','barflow','power_cycle'];
+    }
+  }
+  else {
+    if(p.life==='stress'){
+      r=['rope','stretch','barflow','bodyweight'];
+    } else {
+      r=['rope','stretch','bodyweight','fat_cardio'];
+    }
+  }
+
+  // injury overlays
+  if(p.injury==='lower'){
+    r=r.filter(k=>k!=='kb_iron'&&k!=='power_cycle');
+    if(!r.includes('stretch')) r.unshift('stretch');
+    if(!r.includes('bodyweight')) r.splice(1,0,'bodyweight');
+  }
+  if(p.injury==='upper'){
+    r=r.filter(k=>k!=='hammer'&&k!=='kb_iron');
+    if(!r.includes('stretch')) r.unshift('stretch');
+  }
+  if(p.injury==='multi'){
+    r=['stretch','bodyweight','barflow','rope'];
+  }
+
+  // lifestyle overlays
+  if(p.life==='stress'&&!r.includes('rope')) r.unshift('rope');
+  if(p.pain==='neck'&&!r.includes('stretch')) r.splice(1,0,'stretch');
+
+  return [...new Set(r)].slice(0,4);
+}
+
+// ═══════════════════════════════════════
+// INSIGHTS
+// ═══════════════════════════════════════
+function getInsights(p){
+  const ins=[];
+  const gf=p.gender==='f';
+
+  // 受伤/禁忌优先级最高，先插入确保不被截断
+  if(p.injury&&p.injury!=='no'){
+    ins.push({t:'特别说明',
+      txt:`你提到有需要注意的部位——我们在推荐课程时已经把这个因素纳入考虑，<strong>会优先选择对该部位负担较小的课程</strong>。第一次来时请提前告知教练，他们会在动作上做针对性调整。`});
+  }
+  if(p.goal==='fat'&&(p.exp==='none'||p.exp==='casual')){
+    ins.push({t:'关于你的目标',
+      txt:`你感受到的"松垮"，根本上是<strong>肌肉量不足</strong>导致的。单靠节食或跑步只会减掉更多肌肉，反而更难改变体型。我们会从建立基础力量开始，代谢起来之后，脂肪才会真正消耗，而且不容易反弹。`});
+  }
+  if(p.goal==='shape'&&p.exp==='regular'){
+    ins.push({t:'关于你的阶段',
+      txt:`有训练基础的人，通常缺的不是训练量，而是<strong>系统化的周期计划</strong>。私教评估配合力量团课，是进阶效率最高的组合，我们会根据你现在的状态制定方向。`});
+  }
+  if(p.pain==='neck'||p.pain==='back'){
+    const area=p.pain==='neck'?'颈椎/肩膀':'腰背';
+    ins.push({t:'关于你的身体',
+      txt:`${area}不适是肌肉失衡的信号，不只是"坐太久"那么简单。我们推荐先从伸展放松和流动类课程入手，从根本上重建你的姿势控制能力，而不是单纯拉筋。`});
+  }
+  if(p.life==='stress'){
+    ins.push({t:'关于你现在的状态',
+      txt:`压力大的时候，高强度训练反而可能加重身体负担。我们推荐先从<strong>流动和节奏感强的课程</strong>开始——绳流、棒铃流动这类课程，会员反馈减压效果很明显，身体放松之后，进阶会更顺畅。`});
+  }
+  if(p.life==='tired'){
+    ins.push({t:'关于你现在的状态',
+      txt:`下班已经没什么力气了，这很正常。这时候最重要的是<strong>找门槛低、感受好的课</strong>，而不是最消耗的课。先把来的习惯建立起来，身体适应了自然会想要更多。`});
+  }
+  if((p.exp==='none'||p.exp==='casual')&&(p.body==='loose'||p.body==='bad')){
+    ins.push({t:'关于起点',
+      txt:`没有训练基础反而是个优势——<strong>没有要纠正的坏习惯</strong>，从头建立正确的动作模式，进步反而比有错误习惯的人更快。我们的课程全程有教练示范，不用担心跟不上。`});
+  }
+  if(gf&&(p.goal==='fat'||p.goal==='shape')){
+    ins.push({t:'关于训练效果',
+      txt:`功能性训练的特点是，<strong>体型和体感会先变化，体重数字可能变化不大</strong>——因为在减少脂肪的同时，肌肉量在增加。这是正常的，也是更健康的改变方式。`});
+  }
+  return ins.slice(0,2);
+}
+
+// ═══════════════════════════════════════
+// PACKAGES
+// ═══════════════════════════════════════
+function getPkgs(p){
+  const is0=p.exp==='none'||p.exp==='casual';
+  const isAdv=p.exp==='regular';
+  const freq=p.freq;
+
+  let pkgs=[
+    {i:'✨',n:'单次体验课',d:'一节课\n零压力感受环境和强度',tag:'零门槛',hi:false},
+  ];
+
+  if(is0){
+    pkgs.push({i:'🌱',n:'入门小课包',d:`8-10节\n一周${freq==='1'?'1':'2'}次，约一个月`,tag:'首推',hi:true});
+    pkgs.push({i:'📅',n:'月卡',d:'当月不限次\n建立规律习惯最佳',tag:'高频型',hi:false});
+  } else if(isAdv){
+    pkgs.push({i:'🔑',n:'私教评估包',d:'体适能评估1次\n+ 私教3节\n+ 团课5节',tag:'进阶首选',hi:true});
+    pkgs.push({i:'🏆',n:'季度训练包',d:'30节课\n私教+团课灵活组合',tag:'系统训练',hi:false});
+  } else {
+    pkgs.push({i:'⚡',n:'标准课包',d:`12-15节\n一周${freq||'2'}次，约6-8周`,tag:'性价比高',hi:true});
+    pkgs.push({i:'📅',n:'月卡',d:'当月不限次',tag:'高频用户',hi:false});
+  }
+  return pkgs;
+}
+
+// ═══════════════════════════════════════
+// LABEL MAPS
+// ═══════════════════════════════════════
+const LM={
+  gender:{f:'女性',m:'男性'},
+  age:{u25:'18-25岁',26:'26-35岁',36:'36-45岁','45p':'45岁+'},
+  goal:{fat:'减脂变紧致',shape:'增肌塑形',posture:'体态改善',health:'健康解压'},
+  body:{ok:'状态不错',local:'局部松垮',loose:'明显松垮',bad:'比较困扰'},
+  pain:{neck:'颈椎肩膀',back:'腰背酸痛',knee:'膝盖关节',none:'无明显痛点'},
+  injury:{no:'无特殊',upper:'上肢注意',lower:'腰腿注意',multi:'多处注意'},
+  exp:{none:'零基础',casual:'偶尔运动',gym:'健身房经历',regular:'有规律训练'},
+  life:{sit:'久坐为主',tired:'容易疲惫',stress:'压力较大',free:'时间自由'},
+  job:{office:'办公室',physical:'体力工作',service:'服务行业',home:'在家'},
+  time:{morning:'早上',noon:'中午',evening:'傍晚下班后',weekend:'周末'},
+  freq:{'1':'每周1次','2':'每周2次','3':'每周3次','4p':'每周4次+'},
+};
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let P={}, step=0;
+const TOTAL=STEPS.length;
+
+// ═══════════════════════════════════════
+// RENDER DOTS
+// ═══════════════════════════════════════
+function renderDots(){
+  const el=document.getElementById('dots');
+  el.style.display='flex';
+  let h='';
+  STEPS.forEach((_,i)=>{
+    const d=i<step,c=i===step;
+    h+=`<div class="dot-item">
+      <div class="dot${d?' done':c?' cur':''}">${d?'✓':i+1}</div>
+      ${i<STEPS.length-1?`<div class="dot-line${d?' done':''}"></div>`:''}
+    </div>`;
+  });
+  el.innerHTML=h;
+  // progress
+  const pw=document.getElementById('progWrap');
+  pw.style.display='block';
+  const pct=Math.round(step/TOTAL*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progNum').textContent=step+' / '+TOTAL;
+}
+
+// ═══════════════════════════════════════
+// RENDER SUMMARY BAR
+// ═══════════════════════════════════════
+function sumBar(){
+  if(!Object.keys(P).length) return '';
+  const icons={gender:'👤',age:'🎂',goal:'🎯',body:'💭',pain:'🩺',exp:'⚡',life:'☕',job:'💼',time:'🕐',freq:'📆'};
+  let h='<div class="sumbar">';
+  Object.entries(P).forEach(([k,v])=>{
+    const lm=LM[k];const l=lm?lm[v]:v;
+    h+=`<div class="tag hi">${icons[k]||'·'} <span>${l}</span></div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+// ═══════════════════════════════════════
+// RENDER INTRO
+// ═══════════════════════════════════════
+function renderIntro(){
+  document.getElementById('progWrap').style.display='none';
+  document.getElementById('dots').style.display='none';
+  document.getElementById('root').innerHTML=`
+  <div class="intro">
+
+    <!-- COACHES -->
+    <div class="intro-section" style="padding-top:32px">
+      <div class="coach-grid" style="grid-template-columns:1fr;max-width:360px;">
+        <div class="coach-card">
+          <div class="coach-avatar">🧑</div>
+          <div class="coach-name">上官</div>
+          <div class="coach-role">力量体系专家</div>
+          <div class="coach-desc">主攻功能性力量塑形与增肌课程，从棒铃到锤铃，系统化力量训练体系构建者。</div>
+          <div class="coach-tags">
+            <span class="coach-tag">棒铃塑形</span>
+            <span class="coach-tag">壶铃塑形</span>
+            <span class="coach-tag">锤铃塑形</span>
+            <span class="coach-tag">印第安棒</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FUNCTIONAL COURSES -->
+    <div class="intro-section">
+      <div class="intro-sec-title">团课体系</div>
+      <div class="course-intro-grid">
+        <div class="ci-card">
+          <div class="ci-icon">🔥</div>
+          <div>
+            <div class="ci-name">燃脂 · 心肺系列</div>
+            <div class="ci-desc">燃脂循环、壶铃心肺减脂、棒铃心肺减脂、壶铃铁血有氧。力量与有氧结合，消耗高效，零基础友好。</div>
+          </div>
+        </div>
+        <div class="ci-card">
+          <div class="ci-icon">💪</div>
+          <div>
+            <div class="ci-name">力量 · 塑形系列</div>
+            <div class="ci-desc">棒铃力量塑形、壶铃力量塑形、锤铃力量塑形、力量循环、力量之屋。系统塑造肌肉围度与力量感。</div>
+          </div>
+        </div>
+        <div class="ci-card">
+          <div class="ci-icon">🌊</div>
+          <div>
+            <div class="ci-name">流动 · 协调系列</div>
+            <div class="ci-desc">自重流动、棒铃流动、绳流、壶铃QD。提升全身协调性与灵活性，减压效果突出。</div>
+          </div>
+        </div>
+        <div class="ci-card">
+          <div class="ci-icon">🧘</div>
+          <div>
+            <div class="ci-name">体态 · 恢复系列</div>
+            <div class="ci-desc">伸展放松、印第安棒、权杖流。针对肌肉失衡与体态问题，久坐上班族和体态改善专项。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FUNCTIONAL TOOLS -->
+    <div class="intro-section">
+      <div class="intro-sec-title">功能性训练器械</div>
+      <div class="func-grid">
+        <div class="func-card">
+          <div class="func-icon">🫙</div>
+          <div class="func-name">壶铃</div>
+          <div class="func-desc">全身发力，提升代谢，减脂塑形最高效的工具之一</div>
+        </div>
+        <div class="func-card">
+          <div class="func-icon">🏏</div>
+          <div class="func-name">棒铃 / 印第安棒</div>
+          <div class="func-desc">旋转力学，激活肩颈，改善上肢灵活度</div>
+        </div>
+        <div class="func-card">
+          <div class="func-icon">🔨</div>
+          <div class="func-name">锤铃</div>
+          <div class="func-desc">不对称负荷，强化核心稳定与单侧力量</div>
+        </div>
+        <div class="func-card">
+          <div class="func-icon">🔱</div>
+          <div class="func-name">权杖 / 绳流</div>
+          <div class="func-desc">流动节奏训练，协调性与减压双重效果</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVATE EQUIPMENT -->
+    <div class="intro-section">
+      <div class="intro-sec-title">私教固定器械</div>
+      <div class="equip-grid">
+        <div class="eq-item"><span>🏗️</span> 史密斯架</div>
+        <div class="eq-item"><span>🔗</span> 小龙门架</div>
+        <div class="eq-item"><span>🪑</span> 罗马椅</div>
+        <div class="eq-item"><span>🏋️</span> 哑铃 + 哑铃凳</div>
+        <div class="eq-item"><span>⬇️</span> 坐姿高位下拉器</div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.7;">
+        私教课程使用固定器械，配合系统化周期计划，适合有增肌塑形目标或需要个性化训练方案的会员。
+      </div>
+    </div>
+
+    <div class="start-wrap">
+      <button class="btn-start" onclick="startQuiz()">开始匹配专属课程 →</button>
+      <div class="start-hint">11个问题 · 约2分钟</div>
+    </div>
+
+  </div>`;
+}
+
+function startQuiz(){
+  P={};step=0;
+  renderDots();
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════
+function renderQ(){
+  const s=STEPS[step];
+  let opts='';
+  s.opts.forEach(o=>{
+    opts+=`<div class="oc" data-sid="${s.id}" data-v="${o.v}" onclick="sel(this,'${s.id}','${o.v}')">
+      <div class="oc-chk">✓</div>
+      <span class="oc-icon">${o.i}</span>
+      <div class="oc-label">${o.l}</div>
+      ${o.d?`<div class="oc-desc">${o.d}</div>`:''}
+    </div>`;
+  });
+
+  document.getElementById('root').innerHTML=`
+  <div class="q-wrap">
+    ${sumBar()}
+    <div class="q-tag">${s.tag}</div>
+    <div class="q-title">${s.title}</div>
+    ${s.sub?`<div class="q-sub">${s.sub}</div>`:''}
+    <div class="og ${s.cols}">${opts}</div>
+    <div class="nav">
+      ${step>0?`<button class="btn-b" onclick="back()">← 上一步</button>`:''}
+    </div>
+  </div>`;
+
+  // restore previous selection (no auto-advance when restoring)
+  if(P[s.id]){
+    const prev=document.querySelector(`.oc[data-v="${P[s.id]}"]`);
+    if(prev) prev.classList.add('sel');
+  }
+}
+
+function sel(el,sid,v){
+  document.querySelectorAll(`.oc[data-sid="${sid}"]`).forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  P[sid]=v;
+  // brief flash then advance
+  setTimeout(()=>{
+    step++;
+    if(step>=STEPS.length) renderResult();
+    else { renderDots(); renderQ(); window.scrollTo({top:0,behavior:'smooth'}); }
+  }, 220);
+}
+
+function back(){
+  if(step>0){ step--; renderDots(); renderQ(); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+
+// ═══════════════════════════════════════
+// RENDER RESULT
+// ═══════════════════════════════════════
+function renderResult(){
+  // finish dots
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('progNum').textContent='完成 ✓';
+  document.querySelectorAll('.dot').forEach(d=>{d.className='dot done';d.textContent='✓';});
+  document.querySelectorAll('.dot-line').forEach(l=>l.classList.add('done'));
+
+  const recs=getRecs(P);
+  const ins=getInsights(P);
+  const pkgs=getPkgs(P);
+
+  // pills
+  const pillKeys=['gender','age','goal','pain','exp','life'];
+  const pillsH=pillKeys.filter(k=>P[k]).map(k=>{
+    const lm=LM[k];return`<span class="pill">${lm?lm[P[k]]:P[k]}</span>`;
+  }).join('');
+
+  // insights
+  const insH=ins.map((x,i)=>`
+    <div class="ins" style="animation-delay:${i*.07}s">
+      <div class="ins-t">// ${x.t}</div>
+      <p>${x.txt}</p>
+    </div>`).join('');
+
+  // courses
+  const ccH=recs.map((k,i)=>{
+    const c=C[k];if(!c)return'';
+    const tm=c.time[P.time]||'请咨询教练';
+    return`<div class="cc${i===0?' pri':''}" style="animation-delay:${i*.07}s">
+      <div class="cc-badge">${c.b}</div>
+      <div class="cc-info">
+        <div class="cc-name">${c.n}</div>
+        <div class="cc-why">${c.why}</div>
+      </div>
+      <div class="cc-time">${tm}</div>
+    </div>`;
+  }).join('');
+
+  // packages
+  const pkgH=pkgs.map((p,i)=>`
+    <div class="pkg${p.hi?' hi':''}" style="animation-delay:${i*.06}s">
+      <div class="pkg-icon">${p.i}</div>
+      <div class="pkg-name">${p.n}</div>
+      <div class="pkg-d">${p.d.replace(/\n/g,'<br>')}</div>
+      <div class="pkg-tag">${p.tag}</div>
+    </div>`).join('');
+
+  document.getElementById('root').innerHTML=`
+  <div class="r-hero">
+    <div class="r-hero-tag">你的专属推荐</div>
+    <h2>根据你的情况，这是最适合你的方向</h2>
+    <div class="pills">${pillsH}</div>
+    <p>以下推荐综合考虑了你的目标、身体状态、生活习惯和时间安排。</p>
+  </div>
+
+  <div class="sec-h">我们的分析</div>
+  ${insH}
+
+  <div class="sec-h">为你推荐的课程</div>
+  ${ccH}
+
+  <div class="sec-h">课包方案参考</div>
+  <div class="pkg-grid">${pkgH}</div>
+
+  <div class="sbox" style="margin-top:20px">
+    <div class="st">从这里开始</div>
+    先来体验一节课，不需要做任何决定。练完你自己感受一下——<strong>比任何介绍都更有说服力的，是你亲身感受到的那种通透感。</strong>
+  </div>
+
+  <div class="wbox">
+    <div class="wt">关于坚持</div>
+    一周哪怕只来一次，也比零强。来的习惯比训练强度更重要——先建立节奏，身体自然会要求更多。
+  </div>
+
+  <button class="restart" onclick="restart()">↺ 重新测试</button>
+  `;
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restart(){
+  P={};step=0;
+  renderIntro();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+renderIntro();
+</script>
+</body>
+</html>
