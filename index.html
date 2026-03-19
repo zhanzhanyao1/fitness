@@ -1550,7 +1550,7 @@ const sentences = [
   {zh:"回国后，我更加珍视身边的家人和朋友，每一次相聚都格外珍贵。",en:"Back home, I value the family and friends around me even more — every time we're together feels extra precious.",vocab:"value"},
   {zh:"我把海外工作期间积累的专业人脉带回国，为新的事业发展打下了基础。",en:"I've brought back the professional connections I built up while working abroad to lay the groundwork for a new career.",vocab:"professional, career"},
   {zh:"我意识到，这段海外经历不仅改变了我的职业，也改变了我这个人。",en:"I've come to realise that this overseas experience has changed not just my career, but who I am as a person.",vocab:"experience, career"},
-  {zh:"我把这段经历看作是我人生中最重要的一次旅程，让我成为了更好的自己。",en:"I see this experience as the most important journey of my life — it's made me a better version of myself.",vocab:"experience, journey"}
+  {zh:"我把这段经历看作是我人生中最重要的一次旅程，让我成为了更好的自己。",en:"I see this experience as the most important journey of my life — it's made me a better version of myself.",vocab:"experience, journey"},
 ];
 </script>
 <!-- ═══════════════════════════════════════════════════ -->
@@ -1624,8 +1624,6 @@ function loadChapter(ci) {
   original = chapters[ci].items.slice();
   deck = original.slice();
   idx = 0;
-
-  document.getElementById('headerSet').textContent = chapters[ci].title;
 
   showCard();
   buildList();
