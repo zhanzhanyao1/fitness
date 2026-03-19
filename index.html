@@ -149,30 +149,26 @@ header {
   align-items: center;
   padding: 40px 52px;
   text-align: center;
-  transition: opacity .22s ease, transform .22s ease;
+  transition: opacity .12s ease;
 }
 
 /* Front visible by default */
 .card-front {
   opacity: 1;
-  transform: translateY(0);
   pointer-events: auto;
 }
 .card-back {
   opacity: 0;
-  transform: translateY(10px);
   pointer-events: none;
 }
 
 /* Flipped state */
 .card-scene.flipped .card-front {
   opacity: 0;
-  transform: translateY(-10px);
   pointer-events: none;
 }
 .card-scene.flipped .card-back {
   opacity: 1;
-  transform: translateY(0);
   pointer-events: auto;
 }
 
@@ -229,14 +225,14 @@ header {
 
 /* Back — English */
 .card-back {
-  background: var(--blue);
-  border: none;
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
 }
-.card-back .face-label { color: rgba(255,255,255,.55); }
+.card-back .face-label { color: var(--gray-400); }
 .en-main {
   font-size: 22px;
   font-weight: 500;
-  color: var(--white);
+  color: var(--gray-900);
   line-height: 1.55;
   font-style: italic;
   letter-spacing: -.1px;
@@ -395,7 +391,6 @@ header {
 <body>
 
 <header>
-  <span class="header-set" id="headerSet">—</span>
   <div class="header-right">
     <span class="header-count" id="headerCount"></span>
   </div>
@@ -415,13 +410,11 @@ header {
   <div class="card-scene" id="cardScene" tabindex="0" onclick="flip()">
     <div class="card-body" id="cardBody">
       <div class="card-face card-front" id="cardFront">
-        <span class="face-label">Chinese</span>
         <div class="zh-main" id="zhText"></div>
         <div class="vocab-chips" id="vocabChips"></div>
         <span class="flip-hint">click to flip ↕</span>
       </div>
       <div class="card-face card-back" id="cardBack">
-        <span class="face-label">English</span>
         <div class="en-main" id="enText"></div>
       </div>
     </div>
@@ -1557,7 +1550,7 @@ const sentences = [
   {zh:"回国后，我更加珍视身边的家人和朋友，每一次相聚都格外珍贵。",en:"Back home, I value the family and friends around me even more — every time we're together feels extra precious.",vocab:"value"},
   {zh:"我把海外工作期间积累的专业人脉带回国，为新的事业发展打下了基础。",en:"I've brought back the professional connections I built up while working abroad to lay the groundwork for a new career.",vocab:"professional, career"},
   {zh:"我意识到，这段海外经历不仅改变了我的职业，也改变了我这个人。",en:"I've come to realise that this overseas experience has changed not just my career, but who I am as a person.",vocab:"experience, career"},
-  {zh:"我把这段经历看作是我人生中最重要的一次旅程，让我成为了更好的自己。",en:"I see this experience as the most important journey of my life — it's made me a better version of myself.",vocab:"experience, journey"},
+  {zh:"我把这段经历看作是我人生中最重要的一次旅程，让我成为了更好的自己。",en:"I see this experience as the most important journey of my life — it's made me a better version of myself.",vocab:"experience, journey"}
 ];
 </script>
 <!-- ═══════════════════════════════════════════════════ -->
@@ -1577,6 +1570,7 @@ const TITLES = [
   "人情往来与礼仪","综合生活挑战","职场多元与包容","数字技能与远程工作","个人成长与反思",
   "退租与搬家","节省开销与生活技巧","季节性挑战与适应","工作结束与回国准备","回国后的重新融入"
 ];
+
 
 let chapters = [];
 let curChapter = 0;
@@ -1632,6 +1626,7 @@ function loadChapter(ci) {
   idx = 0;
 
   document.getElementById('headerSet').textContent = chapters[ci].title;
+
   showCard();
   buildList();
 }
