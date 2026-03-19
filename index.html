@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海外生活英语练习 · English Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --border: #30363d;
+    --border-hover: #6e7681;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #656d76;
+    --accent: #58a6ff;
+    --accent-subtle: #1f6feb1a;
+    --accent-border: #1f6feb;
+    --green: #3fb950;
+    --green-subtle: #1a472a33;
+    --orange: #d29922;
+    --orange-subtle: #2a1f0a33;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --shadow: 0 8px 24px rgba(1,4,9,0.75);
+    --radius: 6px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Top nav bar ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.3px;
+  }
+  .topbar-logo .repo-icon {
+    width: 18px; height: 18px;
+    fill: var(--text-secondary);
+  }
+  .topbar-divider { color: var(--border); font-size: 20px; line-height: 1; }
+  .topbar-search {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+    margin-left: auto;
+  }
+  .topbar-search input {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 5px 12px 5px 32px;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .topbar-search input:focus {
+    border-color: var(--accent-border);
+    background: var(--bg);
+  }
+  .topbar-search input::placeholder { color: var(--text-muted); }
+  .search-icon {
+    position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); font-size: 13px; pointer-events: none;
+  }
+
+  /* ── Layout ── */
+  .layout {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 24px 60px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+  }
+  .sidebar-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .sidebar-header {
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .chapter-list { list-style: none; }
+  .chapter-item a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .chapter-item a:hover {
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  .chapter-item.active a {
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+  .chapter-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+    padding: 1px 5px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+  .sidebar-stats {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+  .stat-label { color: var(--text-muted); }
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 600;
+  }
+  .progress-bar-outer {
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 2px;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Main content ── */
+  .main {}
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .breadcrumb .sep { color: var(--border); }
+  .breadcrumb .current { color: var(--text-secondary); }
+
+  /* Chapter header */
+  .chapter-header {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .chapter-title-block {}
+  .chapter-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+  .chapter-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+  .chapter-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    font-size: 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .toolbar-btn:hover {
+    background: var(--bg);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+  .toolbar-btn.active {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+  .toolbar-btn.green.active {
+    background: var(--green-subtle);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .toolbar-sep {
+    width: 1px; height: 20px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .toolbar-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Sentence list */
+  .sentence-list {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .sentence-card {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .sentence-card:last-child { border-bottom: none; }
+  .sentence-card:hover { background: var(--bg-secondary); }
+  .sentence-card.revealed { background: var(--bg-secondary); }
+
+  .card-inner {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    min-height: 72px;
+  }
+
+  .card-num {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+    background: var(--bg-secondary);
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .sentence-card:hover .card-num { background: var(--bg-tertiary); }
+
+  .card-body {
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .zh-text {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 2px;
+  }
+
+  .en-container {
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .en-text {
+    font-family: 'Instrument Serif', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--green);
+    line-height: 1.6;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .sentence-card.revealed .en-text {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .en-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+  .sentence-card.revealed .en-placeholder { display: none; }
+
+  .en-placeholder-bar {
+    height: 2px;
+    border-radius: 1px;
+    background: var(--bg-tertiary);
+    flex: 1;
+  }
+  .en-placeholder-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    white-space: nowrap;
+  }
+
+  .vocab-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.3s 0.1s;
+  }
+  .sentence-card.revealed .vocab-chips { opacity: 1; }
+  .vocab-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--purple);
+    background: rgba(188,140,255,0.1);
+    border: 1px solid rgba(188,140,255,0.25);
+    padding: 1px 6px;
+    border-radius: 20px;
+  }
+
+  /* Mastered badge */
+  .card-actions {
+    padding: 0 20px 12px;
+    display: none;
+    gap: 6px;
+    align-items: center;
+  }
+  .sentence-card.revealed .card-actions { display: flex; }
+  .mastered-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 8px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mastered-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-subtle);
+  }
+  .mastered-btn.done {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-subtle);
+  }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    min-width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0 8px;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .page-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+  }
+  .page-btn.active {
+    background: var(--accent);
+    color: #0d1117;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .page-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .page-ellipsis {
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 0 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Empty / loading state ── */
+  .state-box {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    padding: 60px 20px;
+    text-align: center;
+    background: var(--bg);
+  }
+  .state-icon { font-size: 36px; margin-bottom: 12px; }
+  .state-title { font-size: 15px; color: var(--text-secondary); margin-bottom: 6px; }
+  .state-sub { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+  /* ── No file warning ── */
+  .file-warning {
+    background: var(--orange-subtle);
+    border: 1px solid var(--orange);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--orange);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+  }
+  .file-warning code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(210,153,34,0.15);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* ── Search highlight ── */
+  mark {
+    background: rgba(88,166,255,0.25);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+  }
+  @media (max-width: 560px) {
+    .layout { padding: 12px 12px 40px; gap: 12px; }
+    .chapter-name { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<nav class="topbar">
+  <a href="#" class="topbar-logo">
+    <svg class="repo-icon" viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"/></svg>
+    海外生活英语
+    <span style="color:var(--text-muted)">/</span>
+    sentences
+  </a>
+  <div class="topbar-search">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder="搜索中文或英文..." autocomplete="off">
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-header">📂 章节导航</div>
+      <ul class="chapter-list" id="chapterList">
+        <li class="chapter-item"><a href="#"><span class="chapter-name-label">加载中…</span></a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-header">📊 学习进度</div>
+      <div class="sidebar-stats">
+        <div class="stat-row">
+          <span class="stat-label">总句数</span>
+          <span class="stat-value" id="statTotal">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">已掌握</span>
+          <span class="stat-value" id="statMastered">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">本页已翻</span>
+          <span class="stat-value" id="statRevealed">0 / 20</span>
+        </div>
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" id="progressBar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="breadcrumb">
+      <span>海外生活英语</span>
+      <span class="sep">/</span>
+      <span class="current" id="breadcrumbCurrent">句子练习</span>
+    </div>
+
+    <div id="fileWarning" class="file-warning" style="display:none">
+      ⚠️ 未找到数据文件。请将 <code>sentences.js</code> 和 <code>index.html</code> 放在同一文件夹，再用浏览器打开。
+    </div>
+
+    <!-- Chapter header -->
+    <div class="chapter-header">
+      <div class="chapter-title-block">
+        <span class="chapter-tag" id="chapterTag">CHAPTER 1</span>
+        <div class="chapter-name" id="chapterName">加载中…</div>
+        <div class="chapter-meta" id="chapterMeta">sentences 1–20</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button class="toolbar-btn" id="btnRevealAll" onclick="revealAll()">👁 全部翻开</button>
+      <button class="toolbar-btn" id="btnHideAll" onclick="hideAll()">🙈 全部收起</button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" id="btnShowMastered" onclick="toggleMasteredFilter()">✅ 只看未掌握</button>
+      <div class="toolbar-sep"></div>
+      <span class="toolbar-count" id="toolbarCount">— / —</span>
+    </div>
+
+    <!-- Sentence list -->
+    <div id="sentenceList" class="sentence-list"></div>
+
+    <!-- State boxes -->
+    <div id="loadingState" class="state-box" style="display:none">
+      <div class="state-icon">⏳</div>
+      <div class="state-title">正在加载句子数据…</div>
+      <div class="state-sub">sentences.js</div>
+    </div>
+    <div id="emptyState" class="state-box" style="display:none">
+      <div class="state-icon">🔍</div>
+      <div class="state-title">没有找到匹配的句子</div>
+      <div class="state-sub">请尝试其他关键词</div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+  </main>
+</div>
+
+<script src="sentences.js"></script>
+<script>
+// ─────────────────────────────────────────
+//  State
+// ─────────────────────────────────────────
+const PAGE_SIZE = 20;
+let allSentences = [];
+let chapters = [];          // [{title, start, end}]
+let currentPage = 1;
+let searchQuery = '';
+let masteredSet = new Set(JSON.parse(localStorage.getItem('mastered') || '[]'));
+let showOnlyUnmastered = false;
+let currentChapterIdx = 0;  // which chapter is highlighted in sidebar
+
+// ─────────────────────────────────────────
+//  Boot
+// ─────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (typeof sentences === 'undefined' || !Array.isArray(sentences)) {
+    document.getElementById('fileWarning').style.display = 'flex';
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('sentenceList').style.display = 'none';
+    document.getElementById('chapterName').textContent = '未找到数据';
+    return;
+  }
+
+  allSentences = sentences.map((s, i) => ({...s, idx: i}));
+  document.getElementById('statTotal').textContent = allSentences.length;
+  buildChapters();
+  buildSidebar();
+  renderPage(1);
+  updateStats();
+});
+
+// ─────────────────────────────────────────
+//  Chapter detection from comments pattern
+//  The JS file uses: // ===== N-M: Title =====
+//  But since comments aren't available at runtime, we
+//  detect chapters by parsing the vocab changes and
+//  using every 20 sentences as a group, labeling from
+//  the zh text or a default pattern.
+//
+//  Better: we embed chapter titles as metadata.
+//  We'll auto-group every 20 and name them by
+//  the chapter titles list below (matching the source).
+// ─────────────────────────────────────────
+const CHAPTER_TITLES = [
+  "初到机场与入境","找住所","超市与购物","饮食与餐厅","公共交通",
+  "银行与金融","找工作流程","工作日常","职场沟通","医疗健康",
+  "学习语言与融入文化","户外运动与休闲","社交与朋友","政府与法律","日常问题解决",
+  "教育与培训","旅游与出行","通讯与科技","邻里与社区","天气与季节",
+  "购置家居与生活用品","工作压力与职场挑战","娱乐与文化","理财规划","人际关系与情感",
+  "子女教育","工作出差","政府服务与社区资源","语言挑战与误解","职业晋升与发展",
+  "购车与驾驶","文化节庆与传统","家庭关系与远程联系","网络社区与数字生活","休假与请假",
+  "住宅维修与物业","就业权益","旅行准备与规划","当地医疗体系","工作以外的生活目标",
+  "人情往来与礼仪","综合生活挑战","职场多元与包容","数字技能与远程工作","个人成长与反思",
+  "退租与搬家","节省开销与生活技巧","季节性挑战与适应","工作结束与回国准备","回国后的重新融入"
+];
+
+function buildChapters() {
+  chapters = [];
+  const total = allSentences.length;
+  for (let i = 0; i < total; i += PAGE_SIZE) {
+    const chIdx = Math.floor(i / PAGE_SIZE);
+    chapters.push({
+      title: CHAPTER_TITLES[chIdx] || `第${chIdx+1}章`,
+      start: i,
+      end: Math.min(i + PAGE_SIZE, total) - 1
+    });
+  }
+}
+
+function buildSidebar() {
+  const ul = document.getElementById('chapterList');
+  ul.innerHTML = chapters.map((ch, i) => `
+    <li class="chapter-item" id="chapterItem${i}">
+      <a href="#" onclick="goToChapter(${i});return false;">
+        <span class="chapter-name-label">${ch.title}</span>
+        <span class="chapter-badge">${ch.start+1}–${ch.end+1}</span>
+      </a>
+    </li>
+  `).join('');
+}
+
+// ─────────────────────────────────────────
+//  Navigation
+// ─────────────────────────────────────────
+function goToChapter(idx) {
+  searchQuery = '';
+  document.getElementById('searchInput').value = '';
+  showOnlyUnmastered = false;
+  document.getElementById('btnShowMastered').classList.remove('active');
+  renderPage(idx + 1);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function getFilteredSentences() {
+  let list = allSentences;
+  if (searchQuery.trim()) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(s =>
+      s.zh.toLowerCase().includes(q) ||
+      s.en.toLowerCase().includes(q) ||
+      (s.vocab && s.vocab.toLowerCase().includes(q))
+    );
+  }
+  if (showOnlyUnmastered) {
+    list = list.filter(s => !masteredSet.has(s.idx));
+  }
+  return list;
+}
+
+function renderPage(page) {
+  currentPage = page;
+  const filtered = getFilteredSentences();
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  if (page > totalPages && totalPages > 0) { renderPage(totalPages); return; }
+
+  const start = (page - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+  // Update chapter info
+  if (!searchQuery && !showOnlyUnmastered) {
+    const chIdx = page - 1;
+    const ch = chapters[chIdx] || chapters[0];
+    currentChapterIdx = chIdx;
+    document.getElementById('chapterTag').textContent = `CHAPTER ${page}`;
+    document.getElementById('chapterName').textContent = ch ? ch.title : '—';
+    document.getElementById('chapterMeta').textContent = ch ? `sentences ${ch.start+1}–${ch.end+1} of ${allSentences.length}` : '';
+    document.getElementById('breadcrumbCurrent').textContent = ch ? ch.title : '—';
+    // Sidebar highlight
+    document.querySelectorAll('.chapter-item').forEach((el, i) => {
+      el.classList.toggle('active', i === chIdx);
+    });
+    // Scroll sidebar item into view
+    const activeItem = document.getElementById(`chapterItem${chIdx}`);
+    if (activeItem) activeItem.scrollIntoView({block:'nearest'});
+  } else {
+    document.getElementById('chapterTag').textContent = searchQuery ? 'SEARCH' : 'FILTER';
+    document.getElementById('chapterName').textContent = searchQuery ? `"${searchQuery}"` : '未掌握的句子';
+    document.getElementById('chapterMeta').textContent = `${filtered.length} 条匹配`;
+  }
+
+  // Toolbar count
+  document.getElementById('toolbarCount').textContent = `共 ${filtered.length} 句 · 第 ${page}/${totalPages || 1} 页`;
+
+  // Sentence list
+  const listEl = document.getElementById('sentenceList');
+  const emptyEl = document.getElementById('emptyState');
+
+  if (pageItems.length === 0) {
+    listEl.innerHTML = '';
+    listEl.style.display = 'none';
+    emptyEl.style.display = 'block';
+  } else {
+    emptyEl.style.display = 'none';
+    listEl.style.display = 'block';
+    listEl.innerHTML = pageItems.map((s, localIdx) => renderCard(s, start + localIdx + 1)).join('');
+  }
+
+  renderPagination(page, totalPages);
+  updateStats();
+}
+
+function renderCard(s, displayNum) {
+  const isMastered = masteredSet.has(s.idx);
+  const chips = s.vocab ? s.vocab.split(',').map(v =>
+    `<span class="vocab-chip">${highlight(v.trim())}</span>`
+  ).join('') : '';
+
+  const enHighlighted = searchQuery ? highlightText(s.en, searchQuery) : escHtml(s.en);
+  const zhHighlighted = searchQuery ? highlightText(s.zh, searchQuery) : escHtml(s.zh);
+
+  return `
+    <div class="sentence-card${isMastered?' mastered':''}" id="card${s.idx}" data-idx="${s.idx}">
+      <div class="card-inner" onclick="toggleReveal(${s.idx})">
+        <div class="card-num">${displayNum}</div>
+        <div class="card-body">
+          <div class="zh-text">${zhHighlighted}</div>
+          <div class="en-container">
+            <div class="en-placeholder">
+              <div class="en-placeholder-bar"></div>
+              <span class="en-placeholder-hint">点击翻译</span>
+              <div class="en-placeholder-bar"></div>
+            </div>
+            <div class="en-text">${enHighlighted}</div>
+          </div>
+          ${chips ? `<div class="vocab-chips">${chips}</div>` : ''}
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="mastered-btn${isMastered?' done':''}" onclick="toggleMastered(event,${s.idx})">
+          ${isMastered ? '✓ 已掌握' : '○ 标记掌握'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function highlight(text) {
+  if (!searchQuery) return escHtml(text);
+  return highlightText(text, searchQuery);
+}
+function highlightText(text, q) {
+  const escaped = escHtml(text);
+  if (!q.trim()) return escaped;
+  const re = new RegExp(`(${escRe(q)})`, 'gi');
+  return escaped.replace(re, '<mark>$1</mark>');
+}
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escRe(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+}
+
+// ─────────────────────────────────────────
+//  Reveal logic
+// ─────────────────────────────────────────
+function toggleReveal(idx) {
+  const card = document.getElementById(`card${idx}`);
+  if (!card) return;
+  card.classList.toggle('revealed');
+  updateStats();
+}
+
+function revealAll() {
+  document.querySelectorAll('.sentence-card').forEach(c => c.classList.add('revealed'));
+  updateStats();
+}
+
+function hideAll() {
+  document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('revealed'));
+  updateStats();
+}
+
+// ─────────────────────────────────────────
+//  Mastered logic
+// ─────────────────────────────────────────
+function toggleMastered(e, idx) {
+  e.stopPropagation();
+  if (masteredSet.has(idx)) {
+    masteredSet.delete(idx);
+  } else {
+    masteredSet.add(idx);
+  }
+  localStorage.setItem('mastered', JSON.stringify([...masteredSet]));
+  // Update button
+  const card = document.getElementById(`card${idx}`);
+  if (card) {
+    const btn = card.querySelector('.mastered-btn');
+    if (masteredSet.has(idx)) {
+      btn.classList.add('done');
+      btn.textContent = '✓ 已掌握';
+      card.classList.add('mastered');
+    } else {
+      btn.classList.remove('done');
+      btn.textContent = '○ 标记掌握';
+      card.classList.remove('mastered');
+    }
+  }
+  updateStats();
+}
+
+function toggleMasteredFilter() {
+  showOnlyUnmastered = !showOnlyUnmastered;
+  const btn = document.getElementById('btnShowMastered');
+  btn.classList.toggle('active', showOnlyUnmastered);
+  btn.textContent = showOnlyUnmastered ? '✅ 显示全部' : '✅ 只看未掌握';
+  renderPage(1);
+}
+
+// ─────────────────────────────────────────
+//  Stats
+// ─────────────────────────────────────────
+function updateStats() {
+  document.getElementById('statMastered').textContent = masteredSet.size;
+  const revealed = document.querySelectorAll('.sentence-card.revealed').length;
+  const total = document.querySelectorAll('.sentence-card').length;
+  document.getElementById('statRevealed').textContent = `${revealed} / ${total}`;
+  const pct = allSentences.length ? (masteredSet.size / allSentences.length * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+// ─────────────────────────────────────────
+//  Pagination
+// ─────────────────────────────────────────
+function renderPagination(current, total) {
+  const el = document.getElementById('pagination');
+  if (total <= 1) { el.innerHTML = ''; return; }
+
+  let html = '';
+  // Prev
+  html += `<button class="page-btn" onclick="renderPage(${current-1})" ${current===1?'disabled':''}>‹ 上页</button>`;
+
+  // Pages
+  const pages = getPageRange(current, total);
+  let prev = null;
+  for (const p of pages) {
+    if (prev !== null && p - prev > 1) {
+      html += `<span class="page-ellipsis">…</span>`;
+    }
+    html += `<button class="page-btn${p===current?' active':''}" onclick="renderPage(${p})">${p}</button>`;
+    prev = p;
+  }
+
+  // Next
+  html += `<button class="page-btn" onclick="renderPage(${current+1})" ${current===total?'disabled':''}>下页 ›</button>`;
+  el.innerHTML = html;
+}
+
+function getPageRange(current, total) {
+  const delta = 2;
+  const range = new Set();
+  range.add(1); range.add(total);
+  for (let i = Math.max(2, current-delta); i <= Math.min(total-1, current+delta); i++) range.add(i);
+  return [...range].sort((a,b)=>a-b);
+}
+
+// ─────────────────────────────────────────
+//  Search
+// ─────────────────────────────────────────
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', function() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchQuery = this.value.trim();
+    renderPage(1);
+  }, 300);
+});
+</script>
+</body>
+</html>
