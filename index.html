@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salesforce Developer Flashcards</title>
+<style>
+:root {
+  --bg: #eef4fb;
+  --bg2: #e6f0fa;
+  --surface: rgba(255,255,255,0.72);
+  --surface2: rgba(255,255,255,0.88);
+  --border: rgba(80,140,220,0.22);
+  --text-primary: #1a2d4a;
+  --text-secondary: #4a7aaa;
+  --primary: #2a7fd4;
+  --primary-dim: rgba(42,127,212,0.10);
+  --error: #d63060;
+  --radius: 12px;
+  --font: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg2);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image:
+    radial-gradient(ellipse at 15% 10%,  rgba(160,190,255,0.55) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%,  rgba(120,200,255,0.40) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 45%,  rgba(180,210,255,0.25) 0%, transparent 45%),
+    radial-gradient(ellipse at 75% 15%,  rgba(200,180,255,0.30) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+header {
+  background: rgba(255,255,255,0.60); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(80,140,220,0.18);
+  color: #1a2d4a;
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(80,140,220,0.10);
+  flex-shrink: 0;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+.logo svg { flex-shrink: 0; }
+.total-badge {
+  font-size: 12px;
+  background: rgba(42,127,212,0.10);
+  border: 1px solid rgba(42,127,212,0.25);
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-weight: 500;
+}
+.chapter-bar {
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(80,140,220,0.18);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+.chapter-bar::-webkit-scrollbar { display: none; }
+.cht-tab {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.cht-tab:hover { color: var(--primary); }
+.cht-tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--primary);
+  background: rgba(42,127,212,0.10);
+}
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 32px;
+  gap: 16px;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+}
+.progress-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(42,127,212,0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2a7fd4, #5aaaf0, #80c8ff);
+  border-radius: 3px;
+  transition: width .2s ease;
+  box-shadow: 0 0 8px rgba(42,127,212,0.35);
+}
+.progress-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 52px;
+  text-align: right;
+}
+.card-scene {
+  width: 100%;
+  min-height: 220px;
+  background: rgba(255,255,255,0.68);
+  border: 1px solid rgba(80,140,220,0.20);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(80,140,220,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px 28px 20px;
+  user-select: none;
+}
+.card-scene:active { box-shadow: 0 4px 16px rgba(80,140,220,0.15); }
+.card-face { transition: opacity .15s ease; }
+.card-front { display: flex; flex-direction: column; gap: 16px; }
+.card-back  { display: none; flex-direction: column; gap: 16px; }
+.card-scene.flipped .card-front { display: none; }
+.card-scene.flipped .card-back  { display: flex; }
+.card-hint {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.card-zh {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+.card-en {
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+.vocab-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.vocab-chip {
+  font-size: 11px;
+  padding: 2px 9px;
+  border-radius: 12px;
+  background: rgba(42,127,212,0.10);
+  border: 1px solid rgba(42,127,212,0.25);
+  color: #1a5fa0;
+  font-weight: 500;
+  letter-spacing: .3px;
+}
+.flip-hint {
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  font-size: 11px;
+  color: rgba(42,127,212,0.35);
+  letter-spacing: 0.5px;
+}
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+.nav-btn {
+  background: rgba(126,200,255,0.08);
+  border: 1px solid rgba(126,200,255,0.25);
+  border-radius: var(--radius);
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background .15s, border-color .15s, box-shadow .15s;
+  backdrop-filter: blur(8px);
+}
+.nav-btn:hover:not(:disabled) {
+  background: rgba(126,200,255,0.18);
+  border-color: rgba(126,200,255,0.5);
+  box-shadow: 0 0 12px rgba(126,200,255,0.2);
+}
+.nav-btn:disabled { color: rgba(126,200,255,0.2); cursor: default; }
+.nav-count {
+  font-size: 14px;
+  color: var(--text-secondary);
+  min-width: 70px;
+  text-align: center;
+}
+.tool-row {
+  display: flex;
+  gap: 10px;
+}
+.tool-btn {
+  background: rgba(255,255,255,0.60);
+  border: 1px solid rgba(42,127,212,0.20);
+  border-radius: var(--radius);
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background .15s, color .15s, box-shadow .15s;
+  backdrop-filter: blur(8px);
+}
+.tool-btn:hover { background: rgba(255,255,255,0.88); color: var(--text-primary); }
+.tool-btn.active { background: rgba(42,127,212,0.12); color: var(--primary); border-color: rgba(42,127,212,0.45); box-shadow: 0 2px 10px rgba(42,127,212,0.18); }
+.list-toggle {
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 4px;
+  font-weight: 500;
+}
+.list-toggle:hover { text-decoration: underline; }
+.list-view {
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  border: 1px solid rgba(42,127,212,0.18);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(42,127,212,0.06);
+}
+.list-view.open { display: flex; }
+.list-item {
+  background: rgba(255,255,255,0.62);
+  padding: 10px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: background .1s;
+}
+.list-item:hover { background: rgba(255,255,255,0.88); }
+.list-item.current { background: rgba(42,127,212,0.10); }
+.list-item .li-zh { color: var(--text-primary); font-weight: 500; }
+.list-item .li-en { color: var(--primary); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2C9.2 2 7 4.2 7 7c0 .8.2 1.5.5 2.2C6.6 9.1 5.8 9 5 9c-2.2 0-4 1.8-4 4s1.8 4 4 4h14c2.2 0 4-1.8 4-4 0-2-1.4-3.6-3.3-3.9.2-.5.3-1.1.3-1.6C20 5.3 17.7 3 15 3c-1 0-1.9.3-2.7.8C11.8 2.7 11.3 2 12 2z" fill="white"/>
+      <text x="12" y="15.5" text-anchor="middle" fill="#0176d3" font-size="7" font-weight="bold" font-family="Arial">SF</text>
+    </svg>
+    Salesforce Developer Flashcards
+  </div>
+  <div class="total-badge" id="totalBadge">500 cards</div>
+</header>
+
+<div class="chapter-bar" id="chapterBar"></div>
+
+<div class="main">
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
+
+  <div class="card-scene" id="card" onclick="flip()">
+    <div class="card-face card-front">
+      <div class="card-hint">Chinese &rarr; tap to reveal</div>
+      <div class="card-zh" id="cardZh"></div>
+      <div class="vocab-row" id="vocabRow"></div>
+    </div>
+    <div class="card-face card-back">
+      <div class="card-hint">English</div>
+      <div class="card-en" id="cardEn"></div>
+    </div>
+    <div class="flip-hint">click to flip</div>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="btnPrev" onclick="go(-1)">← Prev</button>
+    <span class="nav-count" id="navCount"></span>
+    <button class="nav-btn" id="btnNext" onclick="go(1)">Next →</button>
+  </div>
+
+  <div class="tool-row">
+    <button class="tool-btn" id="btnShuffle" onclick="toggleShuffle()">⇄ Shuffle</button>
+    <button class="tool-btn" onclick="restart()">↺ Restart</button>
+  </div>
+
+  <div class="list-toggle" onclick="toggleList()" id="listToggle">▾ Show chapter list</div>
+  <div class="list-view" id="listView"></div>
+</div>
+
+<script>
+const sentences = [
+// ===== 1-20: Apex 基础语法与类 =====
+{zh:"这个类需要用 @AuraEnabled 注解，这样 LWC 才能调用它。",en:"This class needs the @AuraEnabled annotation so LWC can call it.",vocab:"@AuraEnabled, annotation, LWC"},
+{zh:"我把这个方法设成了 static，所以不需要实例化就能调用。",en:"I made this method static, so you can call it without instantiating the class.",vocab:"static, instantiate"},
+{zh:"这个变量声明成了 final，之后不能再重新赋值了。",en:"This variable is declared as final, so it can't be reassigned after that.",vocab:"final, declare, reassign"},
+{zh:"我用了 Map 来存储账户 ID 和对应记录，查找速度更快。",en:"I used a Map to store Account IDs with their records, which makes lookups a lot faster.",vocab:"Map, lookup"},
+{zh:"这里有个空指针异常，你在访问对象之前需要先做非空检查。",en:"There's a null pointer exception here. You need to do a null check before accessing the object.",vocab:"null pointer exception, null check"},
+{zh:"这个构造函数有两个参数，分别是名称和类型。",en:"This constructor takes two parameters: the name and the type.",vocab:"constructor, parameter"},
+{zh:"我把这个类设成了 virtual，方便子类去继承和重写方法。",en:"I made this class virtual so subclasses can extend and override its methods.",vocab:"virtual, subclass, override"},
+{zh:"Apex 里的 Integer 和 Long 类型在处理大数字时要注意溢出问题。",en:"In Apex, watch out for overflow when using Integer versus Long for large numbers.",vocab:"Integer, Long, overflow"},
+{zh:"这个方法我加了 @future 注解，让它在异步上下文里运行。",en:"I annotated this method with @future so it runs in an async context.",vocab:"@future, async, annotate"},
+{zh:"这里的 try-catch 块捕获了 DML 异常，避免整个事务回滚。",en:"The try-catch block here catches the DML exception to prevent the whole transaction from rolling back.",vocab:"try-catch, DML exception, rollback"},
+{zh:"我们需要把这些记录装进一个 List 再批量处理，而不是一条一条来。",en:"We need to put these records into a List and process them in bulk, not one by one.",vocab:"List, bulk, process"},
+{zh:"这个接口定义了两个方法，所有实现类都必须实现这两个方法。",en:"This interface defines two methods that all implementing classes must provide.",vocab:"interface, implement"},
+{zh:"你能帮我看一下这段逻辑吗？我觉得条件判断写反了。",en:"Can you take a look at this logic? I think the condition is the wrong way around.",vocab:"condition, logic"},
+{zh:"Enum 在这里比硬编码字符串要好，代码可读性更强。",en:"Using an Enum here is better than hard-coded strings since it makes the code a lot more readable.",vocab:"Enum, hard-coded, readable"},
+{zh:"这个方法接受 Account 类型的参数，不是 SObject。",en:"This method takes an Account parameter, not an SObject.",vocab:"Account, SObject, parameter"},
+{zh:"我用了 String.format 来动态拼接消息，避免字符串拼接性能问题。",en:"I used String.format to build the message dynamically instead of concatenating strings.",vocab:"String.format, concatenate, dynamic"},
+{zh:"这段代码里有个无限循环，你需要加一个退出条件。",en:"There's an infinite loop in this code. You need to add an exit condition.",vocab:"infinite loop, exit condition"},
+{zh:"这个方法需要返回一个 Boolean，不是 void。",en:"This method needs to return a Boolean, not void.",vocab:"Boolean, void, return"},
+{zh:"Apex 不支持多重继承，一个类只能继承一个父类。",en:"Apex doesn't support multiple inheritance. A class can only extend one parent class.",vocab:"multiple inheritance, extend"},
+{zh:"我把公共方法做成了私有的，因为它只在类内部使用。",en:"I made the public method private since it's only used inside the class.",vocab:"private, public, access modifier"},
+// ===== 21-40: SOQL & SOSL 查询 =====
+{zh:"这个 SOQL 查询没有 WHERE 子句，在大数据量下会触发 Governor Limit。",en:"This SOQL query has no WHERE clause, which will hit the Governor Limit on large datasets.",vocab:"SOQL, WHERE clause, Governor Limit"},
+{zh:"我加了 LIMIT 200 来控制返回记录数，避免查询超限。",en:"I added LIMIT 200 to cap the number of records returned and avoid hitting query limits.",vocab:"LIMIT, query limit"},
+{zh:"你能把这个查询改成用 bind 变量吗？直接拼字符串有 SOQL 注入风险。",en:"Can you switch this query to use bind variables? Concatenating strings directly is a SOQL injection risk.",vocab:"bind variable, SOQL injection"},
+{zh:"这个查询需要关联查询子对象，用子查询就可以了。",en:"This query needs to pull in child records too, so use a subquery for that.",vocab:"subquery, child records, relationship"},
+{zh:"ORDER BY CreatedDate DESC 能保证你拿到的是最新的记录。",en:"ORDER BY CreatedDate DESC makes sure you're getting the most recent records.",vocab:"ORDER BY, CreatedDate"},
+{zh:"我用 COUNT() 来统计符合条件的记录数，不需要取出所有数据。",en:"I used COUNT() to get the number of matching records without pulling all the data.",vocab:"COUNT(), aggregate"},
+{zh:"多态查询用 TYPEOF 来处理不同对象类型，比较少见但有时候很有用。",en:"Polymorphic queries use TYPEOF to handle different object types. It's not that common, but it's useful sometimes.",vocab:"polymorphic, TYPEOF"},
+{zh:"这个查询跑在循环里面了，每次循环都会消耗一次查询次数，必须提到循环外面去。",en:"This query is inside a loop, so it's consuming a query every iteration. You need to move it outside the loop.",vocab:"query in loop, iteration, bulkify"},
+{zh:"SOSL 适合跨多个对象做全文搜索，SOQL 更适合精确字段查询。",en:"SOSL is good for full-text searches across multiple objects. SOQL is better when you're querying specific fields.",vocab:"SOSL, full-text search, SOQL"},
+{zh:"我加了 FOR UPDATE 来锁定记录，防止并发更新产生冲突。",en:"I added FOR UPDATE to lock the records and prevent conflicts from concurrent updates.",vocab:"FOR UPDATE, lock, concurrent"},
+{zh:"这个字段是自定义字段，在 SOQL 里要加 __c 后缀。",en:"This is a custom field, so it needs the __c suffix in SOQL.",vocab:"custom field, __c, suffix"},
+{zh:"用 WITH SECURITY_ENFORCED 可以确保查询遵守字段级安全设置。",en:"Using WITH SECURITY_ENFORCED makes sure the query respects field-level security.",vocab:"WITH SECURITY_ENFORCED, field-level security"},
+{zh:"我在 WHERE 子句里用了 IN 操作符来匹配一组 ID。",en:"I used the IN operator in the WHERE clause to match against a set of IDs.",vocab:"IN operator, WHERE clause"},
+{zh:"这个查询跨越了三层关系，性能会比较差，最好拆成两次查询。",en:"This query spans three levels of relationships, so performance will suffer. It's probably better to split it into two queries.",vocab:"relationship query, performance"},
+{zh:"NULL 值在 SOQL 里用 = null 来过滤，不是 IS NULL。",en:"In SOQL, you filter for null values with = null, not IS NULL.",vocab:"null, filter, SOQL syntax"},
+{zh:"我在 SELECT 里只取了需要的字段，不要用 SELECT * 这种写法。",en:"I'm only selecting the fields we actually need in the SELECT. Don't use SELECT * style queries.",vocab:"SELECT, field selection, best practice"},
+{zh:"这个查询结果需要按 AccountId 分组，可以用 GROUP BY。",en:"The query results need to be grouped by AccountId, so use GROUP BY for that.",vocab:"GROUP BY, aggregate query"},
+{zh:"Date 字面量比如 LAST_N_DAYS:30 在 SOQL 里用起来很方便。",en:"Date literals like LAST_N_DAYS:30 are really handy in SOQL.",vocab:"date literal, LAST_N_DAYS"},
+{zh:"我给这个查询加了 OFFSET 来实现分页功能。",en:"I added OFFSET to this query to implement pagination.",vocab:"OFFSET, pagination"},
+{zh:"你可以在 Developer Console 里的 Query Editor 里跑一下这个 SOQL，确认结果对不对。",en:"You can run this SOQL in the Query Editor in the Developer Console to check if the results are right.",vocab:"Developer Console, Query Editor"},
+// ===== 41-60: 触发器（Triggers）=====
+{zh:"这个触发器需要处理批量操作，不能假设每次只有一条记录。",en:"This trigger needs to handle bulk operations. You can't assume there's only one record at a time.",vocab:"trigger, bulk, batch"},
+{zh:"我们把触发器逻辑都放到了 Handler 类里，保持触发器本身精简。",en:"We moved all the trigger logic into a Handler class to keep the trigger itself lean.",vocab:"trigger handler, separation of concerns"},
+{zh:"before insert 触发器适合做数据校验，before update 适合做字段默认值设置。",en:"Before insert triggers are good for validation, and before update triggers are good for setting default field values.",vocab:"before insert, before update, validation"},
+{zh:"after insert 触发器拿到的是已经提交到数据库的记录，带有 ID。",en:"The after insert trigger gives you records that have already been committed to the database, so they have IDs.",vocab:"after insert, committed, record ID"},
+{zh:"这个触发器在 Trigger.new 和 Trigger.old 里做比较，检测字段是否变化了。",en:"This trigger compares Trigger.new and Trigger.old to detect if a field has changed.",vocab:"Trigger.new, Trigger.old, field change"},
+{zh:"我们写了一个递归保护，防止触发器在更新过程中自己触发自己。",en:"We added a recursion guard to prevent the trigger from firing on itself during an update.",vocab:"recursion guard, recursive trigger"},
+{zh:"这个触发器里有 DML，放在循环里面了，会很快触发 Limit。",en:"There's a DML inside a loop in this trigger, which will hit limits fast.",vocab:"DML in loop, Governor Limit"},
+{zh:"触发器里不能直接查询 setup 对象，比如 User 的某些字段，会报错。",en:"You can't directly query certain setup objects like User fields inside a trigger. It'll throw an error.",vocab:"setup object, mixed DML error"},
+{zh:"我们用 TriggerDispatcher 模式来决定哪个 Handler 处理哪个事件。",en:"We use the TriggerDispatcher pattern to route each event to the right Handler.",vocab:"TriggerDispatcher, pattern, event"},
+{zh:"这个触发器应该加一个开关，方便在数据迁移时临时关闭它。",en:"This trigger should have a bypass switch so we can turn it off temporarily during data migrations.",vocab:"bypass, trigger switch, data migration"},
+{zh:"删除操作只有 before delete 和 after delete，没有 update。",en:"For delete operations, you only have before delete and after delete. There's no update equivalent.",vocab:"before delete, after delete"},
+{zh:"undelete 触发器在从回收站恢复记录时触发。",en:"The undelete trigger fires when records are restored from the Recycle Bin.",vocab:"undelete trigger, Recycle Bin"},
+{zh:"这个触发器的顺序和其他触发器有冲突，需要调整一下执行顺序。",en:"This trigger is conflicting with another trigger in terms of execution order. We need to sort that out.",vocab:"trigger order, execution order"},
+{zh:"我在 Handler 类里用了 static 变量来跟踪触发器是否已经运行过了。",en:"I used a static variable in the Handler class to track whether the trigger has already run.",vocab:"static variable, trigger tracking"},
+{zh:"测试这个触发器时需要插入测试数据，然后验证关联记录是否正确创建了。",en:"To test this trigger, insert some test data and then verify the related records were created correctly.",vocab:"test data, verify, related records"},
+{zh:"这个触发器需要考虑到记录可能是通过 API 批量导入进来的情况。",en:"This trigger needs to account for records being bulk-imported via API.",vocab:"API, bulk import, account for"},
+{zh:"我们把公共的触发器工具方法抽出来放到 TriggerUtil 类里了。",en:"We extracted the shared trigger utility methods into a TriggerUtil class.",vocab:"utility class, extract, shared methods"},
+{zh:"这里用 addError 方法可以阻止记录保存，并给用户显示一条错误消息。",en:"You can use addError here to block the record from saving and show the user an error message.",vocab:"addError, block save, error message"},
+{zh:"触发器里的 Map<Id, SObject> 能帮你快速按 ID 查找旧值。",en:"A Map<Id, SObject> inside the trigger lets you quickly look up old values by ID.",vocab:"Map, Trigger.oldMap, lookup"},
+{zh:"这个触发器的逻辑应该写单元测试，覆盖正向和边界场景。",en:"The logic in this trigger should have unit tests covering both the happy path and edge cases.",vocab:"unit test, happy path, edge case"},
+// ===== 61-80: 测试类与覆盖率 =====
+{zh:"这个测试类没有 @isTest 注解，不会被计入代码覆盖率。",en:"This test class is missing the @isTest annotation, so it won't count toward code coverage.",vocab:"@isTest, code coverage"},
+{zh:"测试类里要用 Test.startTest() 和 Test.stopTest() 包住被测逻辑，这样 Limit 会重置。",en:"Wrap the code under test with Test.startTest() and Test.stopTest() so the Governor Limits reset.",vocab:"Test.startTest, Test.stopTest, Governor Limits"},
+{zh:"我们的代码覆盖率是 83%，低于部署要求的 75% 这个说法是不对的，其实达标了。",en:"Our code coverage is 83%, which is above the required 75% threshold, so we're good to deploy.",vocab:"code coverage, deployment threshold"},
+{zh:"测试数据要在测试方法里自己创建，不能依赖现有的 org 数据。",en:"Test data needs to be created inside the test method itself. Don't rely on existing org data.",vocab:"test data, @testSetup, org data"},
+{zh:"我用了 @testSetup 方法来共享测试数据，避免每个测试方法重复创建。",en:"I used a @testSetup method to share test data across test methods so we're not creating it over and over.",vocab:"@testSetup, shared test data"},
+{zh:"System.assertEquals 的参数顺序是先期望值再实际值，写反了会让报错信息很难看懂。",en:"System.assertEquals takes the expected value first and the actual value second. Swapping them makes error messages confusing.",vocab:"System.assertEquals, expected, actual"},
+{zh:"这个测试类只测了主流程，没有覆盖到异常路径，需要补上。",en:"This test class only covers the happy path. We need to add tests for the exception paths too.",vocab:"exception path, test coverage"},
+{zh:"用 Test.getEventBus().deliver() 可以触发平台事件，在测试上下文里用。",en:"Use Test.getEventBus().deliver() to fire platform events in a test context.",vocab:"platform event, Test.getEventBus"},
+{zh:"我用了 @testVisible 让私有方法在测试类里可以被直接测试。",en:"I used @testVisible to make the private method directly testable from the test class.",vocab:"@testVisible, private method"},
+{zh:"这个测试用 System.runAs 切换到另一个用户上下文，测试权限相关逻辑。",en:"This test uses System.runAs to switch to another user context for testing permission-related logic.",vocab:"System.runAs, user context, permissions"},
+{zh:"每个 @isTest 方法应该只测一件事，方便定位失败原因。",en:"Each @isTest method should test one thing so it's easy to pinpoint failures.",vocab:"test method, single responsibility"},
+{zh:"异步代码比如 @future 方法，在测试里需要用 Test.stopTest() 来强制执行完。",en:"For async code like @future methods, you need Test.stopTest() to force execution to complete in tests.",vocab:"@future, async, Test.stopTest"},
+{zh:"测试方法里捕获到意外异常要让它直接失败，不要悄悄吞掉。",en:"If you catch an unexpected exception in a test, let it fail loudly. Don't swallow it.",vocab:"exception, test failure, swallow"},
+{zh:"Batch Apex 的测试需要把批次大小设得足够小，比如 200 条以内。",en:"When testing Batch Apex, set the batch size small enough, like under 200 records.",vocab:"Batch Apex, batch size, test"},
+{zh:"Mock 对象让你在测试里隔离外部 HTTP 调用，不需要真的发请求。",en:"Mock objects let you isolate external HTTP calls in tests so you don't need to make real requests.",vocab:"mock, HttpCalloutMock, HTTP callout"},
+{zh:"这个断言不够精确，只检查了记录数量，没有验证字段值。",en:"This assertion isn't specific enough. It only checks the record count without verifying the field values.",vocab:"assertion, verify, field value"},
+{zh:"测试数据的字段值要尽量真实，边界值比如空字符串和最大长度都要覆盖到。",en:"Test data field values should be realistic. Make sure to cover edge cases like empty strings and max lengths.",vocab:"edge case, boundary value, test data"},
+{zh:"这个测试跑了超过 10 秒，有性能问题，需要看一下有没有多余的查询。",en:"This test took over 10 seconds to run, which points to a performance issue. Check for unnecessary queries.",vocab:"test performance, query, optimization"},
+{zh:"部署前建议在沙盒里跑一遍完整的测试套件，确认没有意外失败。",en:"Before deploying, I'd recommend running the full test suite in the sandbox to make sure nothing fails unexpectedly.",vocab:"test suite, sandbox, deployment"},
+{zh:"覆盖率的计算是按 org 级别来的，单个类低于 75% 也可以部署，只要整体达标就行。",en:"Coverage is calculated at the org level. A single class can be below 75% as long as the overall org is above the threshold.",vocab:"org-level coverage, deployment"},
+// ===== 81-100: Governor Limits =====
+{zh:"这个操作已经触发了 SOQL 查询上限，每个事务只允许 100 次。",en:"This operation has hit the SOQL query limit. You only get 100 queries per transaction.",vocab:"SOQL limit, transaction, 100 queries"},
+{zh:"DML 操作每个事务上限是 150 次，我们现在已经用了 148 次了，非常危险。",en:"The DML limit is 150 operations per transaction. We're already at 148, which is really risky.",vocab:"DML limit, 150, transaction"},
+{zh:"CPU 时间超限通常是因为有复杂的循环或者低效的算法，需要优化。",en:"CPU time limit violations usually come from complex loops or inefficient algorithms. It needs optimization.",vocab:"CPU time limit, loop, algorithm"},
+{zh:"我们用了 Database.Stateful 接口来在批次之间保持状态，避免重复查询。",en:"We used the Database.Stateful interface to maintain state between batches and avoid repeated queries.",vocab:"Database.Stateful, Batch Apex, state"},
+{zh:"Heap Size 超限一般是因为把太多数据装进了内存，需要分批处理。",en:"Heap size violations usually happen when you're loading too much data into memory. You need to process it in chunks.",vocab:"heap size, memory, chunking"},
+{zh:"Queueable Apex 可以链式调用，但最多只能链 50 个，需要注意上限。",en:"Queueable Apex can be chained, but there's a limit of 50 chained jobs, so keep that in mind.",vocab:"Queueable, chained jobs, limit"},
+{zh:"这段代码应该用 Batch Apex 来处理，因为数据量超过了 50000 条。",en:"This should be handled with Batch Apex since the data volume exceeds 50,000 records.",vocab:"Batch Apex, data volume, 50000"},
+{zh:"callout 次数超了，每个事务最多 100 次，需要合并一些 HTTP 请求。",en:"The callout limit has been exceeded. You get 100 per transaction, so we need to consolidate some HTTP requests.",vocab:"callout limit, HTTP request, consolidate"},
+{zh:"这个触发器里有 10 层嵌套循环，每层都有 DML，肯定会超限的。",en:"There are 10 nested loops in this trigger, each with a DML inside. That's going to blow the limits for sure.",vocab:"nested loop, DML, blow limits"},
+{zh:"我建议用 Limits.getQueries() 在代码里打印当前查询次数，方便调试 Limit 问题。",en:"I'd suggest using Limits.getQueries() to log the current query count in your code. It's helpful for debugging limit issues.",vocab:"Limits.getQueries(), debug, limit"},
+{zh:"Scheduled Apex 每 org 最多只能有 100 个计划任务同时运行。",en:"There's a max of 100 scheduled jobs running simultaneously per org with Scheduled Apex.",vocab:"Scheduled Apex, scheduled jobs, limit"},
+{zh:"Future 方法在一个事务里最多调用 50 次，超过了要改用 Queueable。",en:"You can call a future method at most 50 times per transaction. If you need more, switch to Queueable.",vocab:"@future, 50 limit, Queueable"},
+{zh:"Email 发送每天有上限，测试环境里小心别把配额用完了。",en:"There's a daily limit on emails sent. Be careful not to burn through the quota in your test environment.",vocab:"email limit, daily quota"},
+{zh:"我们用了 Platform Cache 来缓存不常变的数据，减少重复查询。",en:"We're using Platform Cache to store data that doesn't change often, which cuts down on repeated queries.",vocab:"Platform Cache, caching, query optimization"},
+{zh:"查询行数限制是 50000，如果用 SOQL FOR LOOP 可以绕过 Heap 限制。",en:"The query row limit is 50,000. You can use a SOQL for loop to work around the heap limit.",vocab:"query rows, SOQL for loop, heap"},
+{zh:"这个 Limit 是同步事务的限制，异步上下文里的限制会高一些。",en:"That limit applies to synchronous transactions. The limits are higher in an async context.",vocab:"synchronous, asynchronous, limits"},
+{zh:"我们用了 Map 来做批量查找，把查询次数从 100 次降到了 1 次。",en:"We used a Map for bulk lookups, bringing the query count down from 100 to 1.",vocab:"Map, bulk lookup, query reduction"},
+{zh:"你可以在 Debug Log 里查 LIMIT USAGE 那一行，看清楚各项资源的消耗情况。",en:"You can check the LIMIT USAGE line in the Debug Log to see a breakdown of all resource consumption.",vocab:"Debug Log, LIMIT USAGE, resource"},
+{zh:"这个 Apex 类有递归问题，每次触发都会再触发一次，很快就 CPU 超时了。",en:"This Apex class has a recursion issue. It keeps triggering itself and hits the CPU timeout fast.",vocab:"recursion, CPU timeout, infinite loop"},
+{zh:"我们的设计目标是每个事务的查询次数控制在 20 以内，现在超了。",en:"Our design goal was to stay under 20 queries per transaction. We're over that now.",vocab:"design goal, query count, optimize"},
+// ===== 101-120: LWC 组件开发 =====
+{zh:"这个 LWC 组件需要在 meta 文件里把 targets 配置好，才能在页面上使用。",en:"This LWC component needs the targets configured in the meta file before it can be used on a page.",vocab:"LWC, meta file, targets"},
+{zh:"我用 @track 装饰器来让对象属性的变化触发组件重新渲染。",en:"I used the @track decorator to make changes to object properties trigger a re-render.",vocab:"@track, reactive, re-render"},
+{zh:"@api 装饰器把属性暴露出去，父组件就可以传值进来了。",en:"The @api decorator exposes the property so the parent component can pass a value in.",vocab:"@api, public property, parent component"},
+{zh:"这个 getter 在模板里用来格式化日期显示，逻辑不要放在 HTML 里。",en:"This getter formats the date for display in the template. Keep formatting logic out of the HTML.",vocab:"getter, template, formatting"},
+{zh:"我在 connectedCallback 里初始化了组件数据，在组件插入 DOM 后立即执行。",en:"I initialized the component data in connectedCallback, which runs right after the component is inserted into the DOM.",vocab:"connectedCallback, lifecycle hook, DOM"},
+{zh:"这个组件用了 wire 适配器来自动获取 Salesforce 数据，不需要手动调接口。",en:"This component uses a wire adapter to automatically fetch Salesforce data without manually calling an endpoint.",vocab:"wire adapter, @wire, data fetching"},
+{zh:"我们的 Lightning Web Component 支持响应式设计，在移动端和桌面端都能用。",en:"Our Lightning Web Component supports responsive design and works on both mobile and desktop.",vocab:"responsive design, mobile, LWC"},
+{zh:"renderedCallback 每次组件渲染后都会执行，要小心别在里面做无限循环操作。",en:"renderedCallback runs after every render, so be careful not to trigger infinite loops inside it.",vocab:"renderedCallback, render cycle, infinite loop"},
+{zh:"我用了 CSS 自定义属性来支持主题定制，外部可以覆盖组件样式。",en:"I used CSS custom properties to support theming so external styles can override the component's look.",vocab:"CSS custom properties, theming, override"},
+{zh:"这个组件用了 lwc:if 指令来条件渲染，替代了之前的 template if:true。",en:"This component uses the lwc:if directive for conditional rendering, replacing the old template if:true syntax.",vocab:"lwc:if, conditional rendering, directive"},
+{zh:"事件从子组件冒泡上来，父组件用 addEventListener 来监听。",en:"The event bubbles up from the child component, and the parent listens with addEventListener.",vocab:"event bubbling, child component, addEventListener"},
+{zh:"我把接口调用都放到了一个 service 模块里，组件保持干净，只处理视图逻辑。",en:"I put all the API calls in a service module so the component stays clean and only handles view logic.",vocab:"service module, separation of concerns, view logic"},
+{zh:"这个 for:each 指令需要一个 key 属性来帮助框架追踪列表变化。",en:"This for:each directive needs a key attribute to help the framework track list changes.",vocab:"for:each, key, list rendering"},
+{zh:"我们用 NavigationMixin 来在 LWC 里实现页面跳转和记录导航。",en:"We use NavigationMixin for page navigation and record navigation inside LWC.",vocab:"NavigationMixin, navigation, page redirect"},
+{zh:"这个组件的样式被封装在 shadow DOM 里，外部 CSS 不会影响它。",en:"The component's styles are encapsulated in the shadow DOM, so external CSS won't affect them.",vocab:"shadow DOM, CSS encapsulation, styles"},
+{zh:"我们用了 LightningElement 的 template.querySelector 来访问子元素。",en:"We use template.querySelector on LightningElement to access child elements.",vocab:"template.querySelector, LightningElement, DOM access"},
+{zh:"这个 slot 让父组件可以往子组件里插入自定义内容。",en:"This slot lets the parent component inject custom content into the child component.",vocab:"slot, named slot, content projection"},
+{zh:"我们用了 import 来引入 Apex 方法，然后在 JavaScript 里直接调用。",en:"We use import to bring in the Apex method, then call it directly from the JavaScript.",vocab:"import Apex, wire, imperative call"},
+{zh:"组件的 disconnectedCallback 里要记得清理定时器和事件监听，防止内存泄漏。",en:"Remember to clean up timers and event listeners in disconnectedCallback to prevent memory leaks.",vocab:"disconnectedCallback, cleanup, memory leak"},
+{zh:"这个组件需要加 Lightning Design System 的类，保持和平台 UI 一致。",en:"This component needs SLDS classes to stay visually consistent with the platform UI.",vocab:"SLDS, Lightning Design System, visual consistency"},
+// ===== 121-140: LWC 事件与通信 =====
+{zh:"子组件向父组件传数据用自定义事件，父组件向子组件传数据用 @api 属性。",en:"Child-to-parent communication uses custom events. Parent-to-child uses @api properties.",vocab:"custom event, @api, component communication"},
+{zh:"我用 CustomEvent 创建了一个事件，把数据放在 detail 属性里传给父组件。",en:"I created a CustomEvent and put the data in the detail property to pass it up to the parent.",vocab:"CustomEvent, detail, dispatch"},
+{zh:"pubsub 模式已经不推荐了，现在更建议用 Lightning Message Service 来跨组件通信。",en:"The pubsub pattern is no longer recommended. Lightning Message Service is the preferred approach for cross-component communication now.",vocab:"pubsub, Lightning Message Service, LMS"},
+{zh:"这两个组件不在同一个 DOM 树里，所以事件冒泡传不过去，要用 LMS。",en:"These two components aren't in the same DOM tree, so event bubbling won't reach across. Use LMS instead.",vocab:"DOM tree, event bubbling, LMS"},
+{zh:"我用 MessageChannel 定义了消息结构，然后在两个组件里分别订阅和发布。",en:"I defined the message structure in a MessageChannel, then set up subscribe and publish in the two components.",vocab:"MessageChannel, subscribe, publish"},
+{zh:"这个事件设置了 bubbles: true 和 composed: true，可以穿越 shadow DOM 边界传播。",en:"This event has bubbles: true and composed: true set, so it can propagate across shadow DOM boundaries.",vocab:"bubbles, composed, shadow DOM"},
+{zh:"父组件用 template.querySelector 拿到子组件引用后，可以直接调用子组件的公共方法。",en:"The parent can get a reference to the child with template.querySelector and then call public methods on it directly.",vocab:"template.querySelector, @api method, parent-child"},
+{zh:"我在组件里监听了 lightning__RecordUpdated 频道，记录更新时自动刷新视图。",en:"I'm subscribing to the lightning__RecordUpdated channel so the view automatically refreshes when a record is updated.",vocab:"lightning__RecordUpdated, LMS channel, refresh"},
+{zh:"事件名用小写加连字符的格式，比如 record-selected，不要用驼峰命名。",en:"Event names should be lowercase with hyphens, like record-selected. Don't use camelCase for events.",vocab:"event naming, kebab-case, convention"},
+{zh:"这个组件用 fireEvent 触发事件时忘记加 this，导致 this 指向不对。",en:"When dispatching the event in this component, you forgot to add this, so this is pointing to the wrong thing.",vocab:"this, dispatchEvent, event dispatch"},
+{zh:"我们用了 Reactive Properties 来让数据变化自动更新 UI，不需要手动触发。",en:"We used reactive properties so data changes automatically update the UI without any manual triggering.",vocab:"reactive property, reactive, UI update"},
+{zh:"一个组件可以同时订阅多个 LMS 频道，在 connectedCallback 里注册。",en:"A component can subscribe to multiple LMS channels at once. Register them in connectedCallback.",vocab:"LMS, subscribe, multiple channels"},
+{zh:"在 disconnectedCallback 里要取消订阅 LMS，不然会有内存泄漏。",en:"You need to unsubscribe from LMS in disconnectedCallback, otherwise you'll get a memory leak.",vocab:"unsubscribe, disconnectedCallback, memory leak"},
+{zh:"我把共用的状态提到了父组件里，由父组件统一管理，子组件只负责展示。",en:"I moved the shared state up to the parent component to manage centrally. The children just handle display.",vocab:"shared state, lift state up, parent component"},
+{zh:"这个事件加了 stopPropagation，所以不会继续往上冒泡了。",en:"This event has stopPropagation on it, so it won't bubble any further up the tree.",vocab:"stopPropagation, event propagation"},
+{zh:"我在 wire 的回调里同时处理了 data 和 error，这样两种情况都能覆盖到。",en:"I'm handling both data and error in the wire callback to cover both scenarios.",vocab:"wire callback, data, error handling"},
+{zh:"这个 @api 方法让父组件可以从外部重置子组件的状态。",en:"This @api method lets the parent reset the child component's state from outside.",vocab:"@api method, reset, parent control"},
+{zh:"我们把通知相关的逻辑提取成了一个独立的 LWC Service 组件。",en:"We extracted the notification logic into a standalone LWC service component.",vocab:"LWC service, extract, reusable"},
+{zh:"用 LWC 的 import 可以直接引用标准 Salesforce Schema，比如字段名和对象名。",en:"With LWC imports, you can reference standard Salesforce schema directly, like field names and object names.",vocab:"import schema, field reference, object API name"},
+{zh:"这个子组件在 @api setter 里做了数据格式化，接收到父组件的值时自动处理。",en:"This child component does data formatting in the @api setter, so it processes the value as soon as it comes in from the parent.",vocab:"@api setter, data formatting, reactive"},
+// ===== 141-160: Salesforce 数据模型 =====
+{zh:"这两个对象之间的关系是 Lookup，不是 Master-Detail，所以子对象可以独立存在。",en:"The relationship between these two objects is a Lookup, not Master-Detail, so the child can exist independently.",vocab:"Lookup, Master-Detail, relationship"},
+{zh:"我需要在 Account 上加一个自定义字段，数据类型是 Currency，精度设到小数点后两位。",en:"I need to add a custom field on Account with a Currency data type, set to two decimal places.",vocab:"custom field, Currency, decimal"},
+{zh:"这个 Junction Object 实现了两个对象之间的多对多关系。",en:"This Junction Object implements a many-to-many relationship between the two objects.",vocab:"junction object, many-to-many"},
+{zh:"RecordType 可以给同一个对象的不同业务场景设置不同的页面布局和 Picklist 值。",en:"RecordTypes let you set different page layouts and picklist values for different business scenarios on the same object.",vocab:"RecordType, page layout, picklist"},
+{zh:"我们需要加一个公式字段来自动计算折扣后的价格，不需要代码。",en:"We need a formula field to automatically calculate the discounted price. No code needed for that.",vocab:"formula field, calculated, discount"},
+{zh:"Roll-up Summary 字段只能在 Master-Detail 关系上用，Lookup 不支持。",en:"Roll-up Summary fields only work on Master-Detail relationships. They're not supported on Lookups.",vocab:"Roll-up Summary, Master-Detail, aggregate"},
+{zh:"这个 Object 上打开了历史追踪，每次字段变化都会记录下来。",en:"Field History Tracking is enabled on this object, so every field change is recorded.",vocab:"Field History Tracking, audit, changes"},
+{zh:"Schema Builder 可以可视化地看清楚对象之间的关系，适合做架构讨论。",en:"Schema Builder gives you a visual view of how objects relate to each other. It's great for architecture discussions.",vocab:"Schema Builder, visual, object relationship"},
+{zh:"这个 Picklist 字段需要加到值集里，这样多个字段可以共用一组选项。",en:"This picklist field needs to be added to a global value set so multiple fields can share the same options.",vocab:"global value set, picklist, shared"},
+{zh:"External ID 字段用于从外部系统 upsert 数据时做记录匹配。",en:"External ID fields are used for record matching when you're upserting data from an external system.",vocab:"External ID, upsert, record matching"},
+{zh:"这个自定义对象没有设置 Sharing Settings，默认是 Private，会影响数据可见性。",en:"This custom object's Sharing Settings default to Private since none were set, which will affect data visibility.",vocab:"Sharing Settings, Private, data visibility"},
+{zh:"加一个 indexed 字段可以提升 SOQL 查询性能，特别是数据量大的时候。",en:"Adding an indexed field can improve SOQL query performance, especially with large data volumes.",vocab:"indexed field, query performance, index"},
+{zh:"这个字段的 API Name 和 Label 不一样，容易搞混，建议统一一下。",en:"The API Name and Label for this field are different, which can be confusing. I'd suggest aligning them.",vocab:"API Name, Label, field naming"},
+{zh:"Compact Layout 决定了在 record highlight panel 里显示哪些字段。",en:"The Compact Layout determines which fields show up in the record highlight panel.",vocab:"Compact Layout, highlight panel, record page"},
+{zh:"这个 Object 已经用了 18 个自定义字段，快到限制了，需要评估一下字段合并的可能性。",en:"This object is already using 18 custom fields and getting close to the limit. We should evaluate if any can be consolidated.",vocab:"custom field limit, consolidate, object"},
+{zh:"Relationship 字段上能不能加 Filter？这样关联查找时用户只看到相关记录。",en:"Can we add a Filter on the relationship field so users only see relevant records when doing a lookup?",vocab:"relationship filter, lookup filter, related records"},
+{zh:"这个 Object 需要开启 Activities，这样才能在记录上记录任务和事件。",en:"This object needs Activities enabled so tasks and events can be logged against records.",vocab:"Activities, tasks, events"},
+{zh:"Big Objects 适合存储大量历史数据，不占用标准的存储配额。",en:"Big Objects are good for storing large volumes of historical data without eating into your standard storage.",vocab:"Big Objects, historical data, storage"},
+{zh:"我们需要把这个字段设成必填，但要注意会影响现有的数据导入流程。",en:"We need to make this field required, but keep in mind it'll affect existing data import flows.",vocab:"required field, data import, impact"},
+{zh:"这个 Object 的标准字段 Name 是自动编号类型，不是文本。",en:"The Name standard field on this object is an auto-number type, not text.",vocab:"auto-number, Name field, standard field"},
+// ===== 161-180: 安全、权限与共享 =====
+{zh:"这个用户没有字段级读取权限，SOQL 查询这个字段时会返回 null。",en:"This user doesn't have field-level read access, so SOQL queries on that field will return null.",vocab:"field-level security, FLS, SOQL"},
+{zh:"Profile 控制的是基础权限，Permission Set 用来给特定用户叠加额外权限。",en:"Profiles control baseline permissions. Permission Sets are used to layer on additional permissions for specific users.",vocab:"Profile, Permission Set, permissions"},
+{zh:"这个 Sharing Rule 是基于标准让步的 criteria-based sharing，不是 ownership-based。",en:"This Sharing Rule is criteria-based sharing, not ownership-based.",vocab:"Sharing Rule, criteria-based, ownership-based"},
+{zh:"OWD 设成 Private 时，用户默认只能看到自己的记录。",en:"When the OWD is set to Private, users can only see their own records by default.",vocab:"OWD, Organization-Wide Default, Private"},
+{zh:"我们给这个 User 加了一个 Manual Share，让他临时能访问那条记录。",en:"We added a Manual Share for this user to give them temporary access to that record.",vocab:"Manual Share, record access, temporary"},
+{zh:"CRUD 权限控制对象级别的增删改查，FLS 控制字段级别的读写。",en:"CRUD controls create, read, update, and delete at the object level. FLS handles read and write at the field level.",vocab:"CRUD, FLS, object-level, field-level"},
+{zh:"这个 Apex 类在没有 with sharing 的情况下运行，会绕过共享规则，要小心。",en:"This Apex class runs without sharing, which means it bypasses sharing rules. Be careful with that.",vocab:"without sharing, sharing rules, bypass"},
+{zh:"我们用 with sharing 确保 Apex 代码遵守当前用户的数据访问权限。",en:"We use with sharing to make sure the Apex code respects the current user's data access.",vocab:"with sharing, data access, user context"},
+{zh:"Permission Set Group 可以把多个 Permission Set 打包在一起，方便批量授权。",en:"Permission Set Groups bundle multiple Permission Sets together so you can assign them in one go.",vocab:"Permission Set Group, bundle, assign"},
+{zh:"这个用户有 View All Data 权限，他能看到 org 里所有对象的所有记录。",en:"This user has the View All Data permission, so they can see all records on all objects in the org.",vocab:"View All Data, system permission, admin"},
+{zh:"我们用 UserRecordAccess 来检查当前用户对某条记录有没有编辑权限。",en:"We use UserRecordAccess to check whether the current user has edit access to a specific record.",vocab:"UserRecordAccess, edit access, check"},
+{zh:"Lightning Component 有自己的 CRUD 和 FLS 检查机制，Apex 里也要另外校验。",en:"Lightning Components have their own CRUD and FLS checks, but you also need to validate in Apex separately.",vocab:"CRUD, FLS, Lightning, Apex"},
+{zh:"这个 Public Group 包含了三个用户和一个 Role，方便统一管理数据访问。",en:"This Public Group contains three users and a role, which makes managing data access much easier.",vocab:"Public Group, Role, data access"},
+{zh:"Muting Permission Set 可以撤销 Permission Set Group 里某个权限，比较灵活。",en:"Muting Permission Sets let you revoke a specific permission within a Permission Set Group, which gives you more flexibility.",vocab:"Muting Permission Set, revoke, Permission Set Group"},
+{zh:"这个 Connected App 的 OAuth Scope 要限制到最小权限原则，不要开太多。",en:"The OAuth Scope on this Connected App should follow the principle of least privilege. Don't grant more than needed.",vocab:"Connected App, OAuth Scope, least privilege"},
+{zh:"Network Access 设置限制了用户只能从特定 IP 段访问 Salesforce。",en:"Network Access settings restrict users to accessing Salesforce only from specific IP ranges.",vocab:"Network Access, IP restriction, security"},
+{zh:"这个 Profile 没有 API Enabled 权限，用 API 集成的时候会报错。",en:"This Profile doesn't have API Enabled, so it'll throw errors when you try to use API integrations.",vocab:"API Enabled, Profile, permission"},
+{zh:"我们开了 Shield Platform Encryption 来给敏感字段加密，满足合规要求。",en:"We enabled Shield Platform Encryption for sensitive fields to meet compliance requirements.",vocab:"Shield Platform Encryption, compliance, sensitive data"},
+{zh:"Login Flow 可以在用户登录后强制执行额外的验证步骤，比如 MFA。",en:"Login Flows let you enforce additional verification steps after login, like MFA.",vocab:"Login Flow, MFA, verification"},
+{zh:"审计追踪可以记录谁在什么时候做了哪些配置变更，排查问题很有用。",en:"Audit Trail logs who made what configuration changes and when, which is really useful for troubleshooting.",vocab:"Audit Trail, configuration change, log"},
+// ===== 181-200: REST/SOAP API 集成 =====
+{zh:"这个 REST API 返回 401，说明认证 Token 过期了，需要重新获取。",en:"This REST API is returning 401, which means the auth token has expired. You need to refresh it.",vocab:"401, auth token, expired"},
+{zh:"我们用 Named Credential 来存储第三方 API 的认证信息，不要硬编码在 Apex 里。",en:"We use Named Credentials to store auth info for third-party APIs. Don't hard-code credentials in Apex.",vocab:"Named Credential, credentials, hard-code"},
+{zh:"这个 Callout 是同步的，在触发器里不能直接调，要放到 @future 里。",en:"This callout is synchronous, so you can't call it directly from a trigger. It needs to go inside a @future method.",vocab:"callout, @future, trigger restriction"},
+{zh:"用 HttpRequest 设置了 method、endpoint 和 body，然后用 Http.send 发出去。",en:"Set the method, endpoint, and body on the HttpRequest, then send it with Http.send.",vocab:"HttpRequest, Http.send, endpoint"},
+{zh:"这个 API 返回了 JSON，我用 JSON.deserializeUntyped 解析成了 Map 对象。",en:"The API returned JSON, and I parsed it into a Map with JSON.deserializeUntyped.",vocab:"JSON.deserializeUntyped, parse, Map"},
+{zh:"我们创建了一个 Wrapper Class 来把 JSON 结构映射成 Apex 对象，更好维护。",en:"We created a Wrapper Class to map the JSON structure to Apex objects, which is easier to maintain.",vocab:"Wrapper Class, JSON mapping, Apex object"},
+{zh:"这个 Connected App 需要配置好 Callback URL，OAuth 流程才能正常走通。",en:"This Connected App needs the Callback URL configured correctly for the OAuth flow to work.",vocab:"Connected App, Callback URL, OAuth"},
+{zh:"我们用 JWT Bearer Token Flow 做服务器到服务器的认证，不需要用户登录。",en:"We're using the JWT Bearer Token Flow for server-to-server auth so no user login is required.",vocab:"JWT Bearer, server-to-server, OAuth flow"},
+{zh:"这个 Endpoint 在防火墙后面，需要把 Salesforce 的 IP 加到白名单里。",en:"This endpoint is behind a firewall, so Salesforce IPs need to be whitelisted.",vocab:"firewall, IP whitelist, endpoint"},
+{zh:"Composite API 可以在一个请求里执行多个操作，减少网络往返次数。",en:"The Composite API lets you perform multiple operations in a single request, which cuts down on network round trips.",vocab:"Composite API, batch request, round trips"},
+{zh:"这个 API 有速率限制，超过了会返回 429，我们需要加重试逻辑。",en:"This API has rate limiting. Going over it returns 429, so we need to add retry logic.",vocab:"rate limit, 429, retry logic"},
+{zh:"我们用 Platform Events 来解耦系统，发布方不需要知道订阅方是谁。",en:"We use Platform Events to decouple systems so the publisher doesn't need to know who's subscribing.",vocab:"Platform Events, decouple, publish-subscribe"},
+{zh:"Outbound Message 是一种基于 SOAP 的通知机制，用来把 Salesforce 数据推给外部系统。",en:"Outbound Messages are a SOAP-based mechanism for pushing Salesforce data to external systems.",vocab:"Outbound Message, SOAP, push notification"},
+{zh:"这个 External Object 通过 Salesforce Connect 实时访问外部数据，不需要导入进来。",en:"This External Object uses Salesforce Connect to access external data in real time without importing it.",vocab:"External Object, Salesforce Connect, real-time"},
+{zh:"API 版本从 v52 升到了 v61，需要检查一下有没有 breaking change。",en:"We're upgrading the API version from v52 to v61. Need to check for any breaking changes.",vocab:"API version, breaking change, upgrade"},
+{zh:"这个 Bulk API Job 用来做大批量的数据导入，比单条 REST API 效率高很多。",en:"This Bulk API job handles large-scale data imports. It's much more efficient than calling the REST API record by record.",vocab:"Bulk API, data import, large-scale"},
+{zh:"我们在 Apex 里用 JSON.serialize 把对象转成 JSON 字符串，发给外部 API。",en:"We use JSON.serialize in Apex to convert the object to a JSON string before sending it to the external API.",vocab:"JSON.serialize, serialize, API request"},
+{zh:"这个 Inbound REST Service 用 @RestResource 注解暴露了 Apex 方法给外部调用。",en:"This inbound REST service uses the @RestResource annotation to expose Apex methods for external callers.",vocab:"@RestResource, inbound REST, expose"},
+{zh:"我们加了 timeout 设置，避免第三方 API 响应太慢时把事务卡住。",en:"We set a timeout to prevent the transaction from hanging if the third-party API is slow to respond.",vocab:"timeout, third-party API, transaction"},
+{zh:"这个 Apex REST 接口需要校验调用方的权限，不能对所有人都开放。",en:"This Apex REST endpoint needs to validate the caller's permissions. It shouldn't be open to everyone.",vocab:"permission check, REST endpoint, security"},
+// ===== 201-220: 部署与 DevOps =====
+{zh:"这次部署包含了 Apex 类和触发器，记得先跑一遍测试确认覆盖率达标。",en:"This deployment includes Apex classes and triggers. Make sure to run the tests first to confirm coverage is above the threshold.",vocab:"deployment, code coverage, threshold"},
+{zh:"我们用 Salesforce DX 来管理项目，源代码都在版本控制里了。",en:"We use Salesforce DX to manage the project, and all the source code is in version control.",vocab:"Salesforce DX, SFDX, version control"},
+{zh:"Change Set 部署时把所有依赖的组件都加进去了吗？缺了的话部署会失败。",en:"Did you add all the dependent components to the Change Set? It'll fail if anything is missing.",vocab:"Change Set, dependent component, deployment"},
+{zh:"我们用 CI/CD Pipeline 来自动化测试和部署，减少手工操作的风险。",en:"We use a CI/CD pipeline to automate testing and deployment and reduce the risk of manual errors.",vocab:"CI/CD, pipeline, automation"},
+{zh:"这个 Scratch Org 是临时的，7 天后就过期了，确认你的工作都提交了。",en:"This Scratch Org is temporary and expires in 7 days. Make sure all your work is committed.",vocab:"Scratch Org, temporary, expire"},
+{zh:"我们需要把这个 Flow 也加到部署包里，不然功能在目标 org 里跑不起来。",en:"We need to add this Flow to the deployment package, otherwise the feature won't work in the target org.",vocab:"Flow, deployment package, target org"},
+{zh:"我们用了 SFDX 的 source deploy 命令来推送代码，比上传包快一些。",en:"We used the SFDX source deploy command to push the code, which is faster than uploading a package.",vocab:"source deploy, SFDX, push"},
+{zh:"部署到生产前先在 Full Copy Sandbox 里做完整的 UAT，确保没问题。",en:"Do a full UAT in the Full Copy Sandbox before deploying to production to make sure everything's solid.",vocab:"Full Copy Sandbox, UAT, production"},
+{zh:"这个 Metadata 组件依赖一个 Custom Setting，需要先在目标 org 配置好。",en:"This Metadata component depends on a Custom Setting that needs to be configured in the target org first.",vocab:"Custom Setting, dependency, metadata"},
+{zh:"我们用 Unlocked Package 来管理模块化的功能，方便跨 org 部署和版本管理。",en:"We use Unlocked Packages to manage modular features, which makes cross-org deployment and version management easier.",vocab:"Unlocked Package, modular, version management"},
+{zh:"这次部署有 quick deploy 选项，因为测试已经跑过一次了，节省部署时间。",en:"There's a quick deploy option for this since the tests have already run once. It saves deployment time.",vocab:"quick deploy, test execution, deployment"},
+{zh:"DevOps Center 可以可视化地管理变更集，比手工操作更清晰。",en:"DevOps Center gives you a visual way to manage change sets, which is much clearer than doing it manually.",vocab:"DevOps Center, change management, visual"},
+{zh:"我们需要在 Pipeline 里加一步 Delta Deployment，只部署有变化的组件。",en:"We need to add a delta deployment step to the pipeline so only changed components get deployed.",vocab:"delta deployment, pipeline, changed components"},
+{zh:"Production 部署失败了，需要看一下错误日志，找出是哪个组件导致的。",en:"The production deployment failed. Let's check the error log to figure out which component caused it.",vocab:"deployment failure, error log, production"},
+{zh:"这个 Sandbox 刷新之后所有的自定义配置都没了，需要重新部署一遍。",en:"After the sandbox refresh, all the custom configurations are gone. We need to redeploy everything.",vocab:"sandbox refresh, redeploy, configuration"},
+{zh:"我们设置了 Deployment Notification，部署完成或失败时会发邮件通知相关人员。",en:"We set up deployment notifications so the relevant team members get emailed when a deployment succeeds or fails.",vocab:"deployment notification, email alert"},
+{zh:"这个 Profile 里的权限不在 Change Set 里，需要手动在目标 org 配置。",en:"The permissions in this Profile aren't part of the Change Set, so they need to be configured manually in the target org.",vocab:"Profile permissions, manual configuration, Change Set"},
+{zh:"我们用了 Environment Hub 来集中管理所有的沙盒和 Scratch Org。",en:"We use the Environment Hub to centrally manage all our sandboxes and Scratch Orgs.",vocab:"Environment Hub, sandbox management, Scratch Org"},
+{zh:"这次发布窗口是周五晚上 10 点，部署完要立即做冒烟测试。",en:"The release window is Friday at 10 PM. We need to do a smoke test immediately after deployment.",vocab:"release window, smoke test, post-deployment"},
+{zh:"我在 package.xml 里把所有需要部署的组件都列清楚了，避免漏掉。",en:"I listed all the components to deploy in package.xml to make sure nothing gets missed.",vocab:"package.xml, manifest, deployment"},
+// ===== 221-240: Debug & 问题排查 =====
+{zh:"这个错误日志在哪能看到？在 Setup 里搜 Debug Logs 就能找到。",en:"Where can I find the error log? Search for Debug Logs in Setup and you'll find it.",vocab:"Debug Log, Setup, error log"},
+{zh:"我开了 Debug Log 但日志大小超了，最关键的部分被截掉了。",en:"I turned on Debug Log, but the log size was exceeded and the most critical part got cut off.",vocab:"log size, truncated, Debug Log"},
+{zh:"这个异常堆栈信息显示问题出在第 47 行，你可以看一下那里的逻辑。",en:"The exception stack trace shows the issue is at line 47. Take a look at the logic there.",vocab:"stack trace, exception, line number"},
+{zh:"我用了 System.debug(LoggingLevel.ERROR, ...) 让这条日志更容易在日志里找到。",en:"I used System.debug with LoggingLevel.ERROR so this log entry is easier to spot in the log.",vocab:"System.debug, LoggingLevel, debug"},
+{zh:"这个问题只在生产上出现，沙盒里复现不了，可能和数据量或配置差异有关。",en:"This issue only shows up in production and won't reproduce in the sandbox. It might be related to data volume or config differences.",vocab:"production issue, reproduce, environment difference"},
+{zh:"我用 Anonymous Apex 快速测试了一下这段逻辑，确认逻辑本身是对的。",en:"I ran this logic through Anonymous Apex to quickly test it and confirmed the logic itself is correct.",vocab:"Anonymous Apex, quick test, validate"},
+{zh:"这个 SOQL 查询没有返回数据，我检查了一下，发现 WHERE 条件的格式写错了。",en:"This SOQL query isn't returning data. I checked and found the WHERE condition format is wrong.",vocab:"SOQL, WHERE condition, format error"},
+{zh:"用 Workbench 可以直接在浏览器里跑 SOQL、查看元数据，调试很方便。",en:"Workbench lets you run SOQL and inspect metadata directly in the browser. Really handy for debugging.",vocab:"Workbench, SOQL, metadata"},
+{zh:"这个问题是并发触发器冲突，两个事务同时更新同一条记录导致的。",en:"This issue is a concurrent trigger conflict caused by two transactions updating the same record at the same time.",vocab:"concurrent, lock conflict, transaction"},
+{zh:"我加了更多 debug 日志来追踪数据在各个步骤里的变化，方便定位问题。",en:"I added more debug logs to trace how the data changes at each step, which helps narrow down the issue.",vocab:"debug log, trace, data flow"},
+{zh:"这个错误信息太笼统了，需要在 catch 块里打印更详细的上下文信息。",en:"This error message is too generic. The catch block needs to log more detailed context.",vocab:"error message, catch block, context"},
+{zh:"这个 UI 问题只在某个浏览器上出现，需要打开控制台看一下 JS 错误。",en:"This UI issue only shows up in a specific browser. Open the console and check for JS errors.",vocab:"browser issue, console, JS error"},
+{zh:"我用 Chrome DevTools 的网络面板查了一下，Apex 接口返回了 500 错误。",en:"I used the Network panel in Chrome DevTools and saw the Apex endpoint returning a 500 error.",vocab:"Chrome DevTools, Network panel, 500 error"},
+{zh:"这个 Apex 方法超时了，执行时间超过了 10 秒的限制。",en:"This Apex method timed out. It exceeded the 10-second execution time limit.",vocab:"timeout, execution time, Apex limit"},
+{zh:"日志级别设成 FINEST 会产生大量日志，通常 DEBUG 就够了。",en:"Setting the log level to FINEST generates a lot of output. DEBUG is usually enough.",vocab:"log level, FINEST, DEBUG"},
+{zh:"这个问题出在数据加载的时候，某些记录的字段格式和预期的不一样。",en:"This issue came up during data load. Some records had field formats that didn't match what was expected.",vocab:"data load, field format, mismatch"},
+{zh:"用 Salesforce Inspector 浏览器插件可以快速查看记录的所有字段和值。",en:"The Salesforce Inspector browser extension lets you quickly view all fields and values on a record.",vocab:"Salesforce Inspector, browser extension, field values"},
+{zh:"这个流程在测试账号上运行正常，但在真实用户上失败了，可能是权限问题。",en:"This flow works fine on the test account but fails for real users, which points to a permissions issue.",vocab:"flow, permissions, user context"},
+{zh:"我在 Process Monitor 里看到这个任务已经卡了 2 个小时了，需要手动终止。",en:"I can see in the Process Monitor that this job has been stuck for 2 hours. We need to manually abort it.",vocab:"Process Monitor, stuck job, abort"},
+{zh:"错误是 UNABLE_TO_LOCK_ROW，说明有并发的 DML 操作在同时更新这条记录。",en:"The error is UNABLE_TO_LOCK_ROW, which means there are concurrent DML operations trying to update the same record at the same time.",vocab:"UNABLE_TO_LOCK_ROW, concurrent DML, record lock"},
+// ===== 241-260: Git & Code Review =====
+{zh:"你能先 pull 一下最新的代码再提交吗？不然容易有合并冲突。",en:"Can you pull the latest code first before committing? Otherwise you'll likely run into merge conflicts.",vocab:"pull, commit, merge conflict"},
+{zh:"这个 PR 我看了一下，逻辑没问题，但有几个命名需要改得更有描述性一点。",en:"I reviewed this PR and the logic looks fine, but a few names need to be more descriptive.",vocab:"PR, code review, naming"},
+{zh:"我把这个功能开在了一个 feature branch 上，开发完了再合到 main。",en:"I'm building this feature on a separate feature branch and will merge it into main when it's done.",vocab:"feature branch, merge, main"},
+{zh:"这次 commit message 写的太简单了，能加上更多上下文说明改了什么吗？",en:"The commit message is too vague. Can you add more context about what was changed?",vocab:"commit message, context, descriptive"},
+{zh:"这个 conflict 是因为你和我同时改了同一行，我们来对一下谁的版本是对的。",en:"This conflict happened because we both edited the same line. Let's figure out which version is correct.",vocab:"merge conflict, conflict resolution"},
+{zh:"我 cherry-pick 了那个 hotfix commit 到 release branch，修复已经生效了。",en:"I cherry-picked that hotfix commit onto the release branch, so the fix is in.",vocab:"cherry-pick, hotfix, release branch"},
+{zh:"这个 branch 已经落后 main 太多了，你需要先 rebase 一下再提 PR。",en:"This branch is too far behind main. You need to rebase before opening the PR.",vocab:"rebase, behind, main branch"},
+{zh:"我们的 PR 要求至少两个人 review 才能合并，这是团队规范。",en:"Our PRs require at least two reviewers before merging. That's the team standard.",vocab:"PR review, approval, team standard"},
+{zh:"这个文件不应该提交进来，把它加到 .gitignore 里去。",en:"This file shouldn't be committed. Add it to .gitignore.",vocab:".gitignore, committed, exclude"},
+{zh:"我们用 GitHub Actions 在每次 push 的时候自动跑测试。",en:"We use GitHub Actions to automatically run tests on every push.",vocab:"GitHub Actions, CI, automated testing"},
+{zh:"这段代码我建议用 squash merge 来合并，保持主分支提交历史整洁。",en:"I'd suggest using squash merge for this so the main branch commit history stays clean.",vocab:"squash merge, commit history, clean"},
+{zh:"你能把这个大 PR 拆成几个小的吗？这样 review 起来会容易很多。",en:"Can you break this big PR into smaller ones? It'll be much easier to review.",vocab:"PR, split, reviewable"},
+{zh:"git stash 可以临时保存你未提交的工作，然后去切换另一个分支处理紧急任务。",en:"git stash lets you temporarily save uncommitted work so you can switch branches to handle something urgent.",vocab:"git stash, uncommitted, switch branch"},
+{zh:"我们用的是 trunk-based development，功能都用 feature flag 控制，而不是长期分支。",en:"We're using trunk-based development with feature flags to control releases, rather than long-lived branches.",vocab:"trunk-based, feature flag, long-lived branch"},
+{zh:"这个 commit 夹带了好几个不相关的改动，建议拆成独立的 commit。",en:"This commit bundles several unrelated changes together. I'd suggest splitting them into separate commits.",vocab:"commit, unrelated changes, atomic"},
+{zh:"代码里有遗留的调试注释，提交前清理掉比较好。",en:"There are some leftover debug comments in the code. Best to clean those up before committing.",vocab:"debug comments, cleanup, commit"},
+{zh:"这个 PR 的描述写得很好，清楚说明了改动原因和影响范围。",en:"The PR description is well written and clearly explains why the change was made and what it affects.",vocab:"PR description, change rationale, impact"},
+{zh:"hotfix 要直接从 main 分支拉出来修，修完立刻合回 main 和当前 release。",en:"A hotfix should branch off main, be fixed, and then be merged back into both main and the current release right away.",vocab:"hotfix, branch strategy, merge back"},
+{zh:"我用了 git blame 来查这行代码是谁写的，想了解一下当时的背景。",en:"I used git blame to find out who wrote this line. I wanted to understand the background.",vocab:"git blame, author, history"},
+{zh:"我们的 branching strategy 是 GitFlow，有 develop、release 和 hotfix 分支。",en:"Our branching strategy is GitFlow, with develop, release, and hotfix branches.",vocab:"GitFlow, branching strategy, release"},
+// ===== 261-280: 日常团队协作 =====
+{zh:"这个需求我理解的是要在账户页面加一个快捷操作按钮，我理解对吗？",en:"My understanding is that we need to add a quick action button on the Account page. Is that right?",vocab:"quick action, Account page, clarify"},
+{zh:"这个方案有两种实现思路，我们讨论一下哪个更适合当前的架构。",en:"There are two ways to implement this. Let's talk through which one fits our architecture better.",vocab:"approach, architecture, trade-off"},
+{zh:"这个 bug 我能复现，是在特定条件下触发的，我已经定位到原因了。",en:"I can reproduce this bug. It triggers under specific conditions, and I've tracked down the cause.",vocab:"reproduce, root cause, debug"},
+{zh:"我今天可能无法按时完成这个任务，因为遇到了一个阻塞性的技术问题。",en:"I might not finish this task today since I've hit a technical blocker.",vocab:"blocker, task, deadline"},
+{zh:"你方便帮我看一下这段代码吗？我在这里卡了大概一个小时了。",en:"Could you take a look at this code when you have a moment? I've been stuck here for about an hour.",vocab:"code review, stuck, help"},
+{zh:"这个功能我预估需要三天，包括开发和单元测试。",en:"I'm estimating about three days for this feature, including development and unit testing.",vocab:"estimate, development, unit test"},
+{zh:"我在 Jira 上把这个任务拆成了三个子任务，你看一下分配合不合理。",en:"I split this task into three subtasks in Jira. Take a look and see if the breakdown makes sense.",vocab:"Jira, subtask, breakdown"},
+{zh:"这个设计文档还没最终确认，我们等 tech lead review 之后再开始开发。",en:"The design doc isn't finalized yet. Let's wait for the tech lead to review it before we start development.",vocab:"design doc, tech lead, finalized"},
+{zh:"我在本地开发好了，你能帮我在 Sandbox 上验证一遍功能吗？",en:"I've finished development locally. Can you help verify the feature in the Sandbox?",vocab:"local development, sandbox, verify"},
+{zh:"这个 Story 的验收标准写得不够清楚，需要和 BA 再确认一下。",en:"The acceptance criteria for this story aren't clear enough. We need to clarify with the BA.",vocab:"acceptance criteria, BA, story"},
+{zh:"这次 Sprint 结束之前这个功能来不及了，我们推到下个 Sprint 吧。",en:"We won't be able to finish this feature before the Sprint ends. Let's push it to the next Sprint.",vocab:"Sprint, push back, capacity"},
+{zh:"我在 Confluence 上更新了技术设计文档，你有空可以去看一下。",en:"I've updated the technical design doc in Confluence. Check it out when you get a chance.",vocab:"Confluence, design doc, technical"},
+{zh:"这个问题需要 System Admin 的权限才能排查，你能帮忙联系一下吗？",en:"Troubleshooting this issue requires System Admin access. Can you help get someone looped in?",vocab:"System Admin, access, escalate"},
+{zh:"我把今天的进展在 Slack 上更新了，你看一下有没有什么要补充的。",en:"I posted today's progress update on Slack. Take a look and let me know if there's anything to add.",vocab:"Slack, status update, progress"},
+{zh:"你这个方案很有创意，但我担心长期维护成本，我们再讨论一下。",en:"Your approach is creative, but I'm concerned about the long-term maintenance cost. Let's discuss it further.",vocab:"maintenance cost, trade-off, discuss"},
+{zh:"这次 Demo 是给 stakeholder 看的，确保功能流程走得顺畅。",en:"This Demo is for the stakeholders, so make sure the feature flow runs smoothly.",vocab:"Demo, stakeholder, flow"},
+{zh:"我刚注意到 UAT 反馈里有一个关键问题，我们现在需要评估影响范围。",en:"I just noticed a critical issue in the UAT feedback. We need to assess the impact now.",vocab:"UAT, critical issue, impact assessment"},
+{zh:"下周有个技术分享，我打算讲一下我们在这个项目里学到的 OmniStudio 最佳实践。",en:"There's a tech talk next week and I'm planning to share the OmniStudio best practices we picked up on this project.",vocab:"tech talk, best practice, OmniStudio"},
+{zh:"这次 code freeze 之后就不能再提交了，所有变更必须等到下个迭代。",en:"After the code freeze, no more commits. All changes have to wait until the next iteration.",vocab:"code freeze, commit, iteration"},
+{zh:"我把这个遗留问题记在了 Tech Debt 清单里，等有空了来优化。",en:"I logged this legacy issue on the Tech Debt list to clean up when we have capacity.",vocab:"tech debt, legacy, optimize"},
+// ===== 281-300: OmniScript 基础 =====
+{zh:"这个 OmniScript 有五个步骤，用户需要按顺序填完才能提交。",en:"This OmniScript has five steps. The user needs to complete them in order before submitting.",vocab:"OmniScript, step, submit"},
+{zh:"我在第二步加了一个 Conditional View，根据用户的选择来显示或隐藏字段。",en:"I added a Conditional View on step two to show or hide fields based on what the user selects.",vocab:"Conditional View, show/hide, conditional logic"},
+{zh:"这个 Text Block 元素用来显示引导信息，不是可编辑的字段。",en:"This Text Block element is for displaying instructional content, not an editable field.",vocab:"Text Block, display, instructions"},
+{zh:"Radio 按钮控制后续步骤的路径，根据用户选择决定走哪个分支。",en:"The radio button controls the path through the subsequent steps based on what the user picks.",vocab:"Radio, branching, path"},
+{zh:"我在这个步骤加了 Validation Rule，确保用户提交前填写了所有必填字段。",en:"I added a Validation Rule on this step to make sure users fill in all required fields before submitting.",vocab:"Validation Rule, required field, submit"},
+{zh:"OmniScript 支持 JSON 格式的数据节点，我把返回的数据存到了 DataJSON 里。",en:"OmniScript supports JSON data nodes. I stored the returned data in the DataJSON.",vocab:"DataJSON, JSON node, data node"},
+{zh:"这个 Formula 元素根据前面的输入动态计算出折扣金额。",en:"This Formula element dynamically calculates the discount amount based on earlier inputs.",vocab:"Formula element, dynamic, calculate"},
+{zh:"我用了 Group Block 把相关字段放在一起，让布局更清晰。",en:"I used a Group Block to keep related fields together and make the layout cleaner.",vocab:"Group Block, layout, organize"},
+{zh:"这个 OmniScript 用了 Remote Actions 来调用 Apex 方法获取数据。",en:"This OmniScript uses Remote Actions to call Apex methods for fetching data.",vocab:"Remote Actions, Apex, data fetch"},
+{zh:"Type Ahead 搜索框让用户边输入边搜索 Salesforce 记录，体验比 Lookup 更流畅。",en:"The Type Ahead field lets users search Salesforce records as they type, which feels smoother than a standard Lookup.",vocab:"Type Ahead, search, Lookup"},
+{zh:"我在 OmniScript 里加了 Message 元素来显示成功或错误的提示信息。",en:"I added a Message element in the OmniScript to display success or error notifications.",vocab:"Message element, notification, feedback"},
+{zh:"Navigation 按钮控制步骤之间的前进和后退，可以自定义标签。",en:"Navigation buttons control moving forward and backward between steps and can have custom labels.",vocab:"Navigation, step, custom label"},
+{zh:"这个步骤可以配置 CSS 来自定义样式，和公司的品牌设计对齐。",en:"This step can have CSS configured to match the company's brand design.",vocab:"CSS, custom styling, branding"},
+{zh:"我给这个 OmniScript 加了一个 Repeat Block，让用户可以动态添加多行数据。",en:"I added a Repeat Block to this OmniScript so users can dynamically add multiple rows of data.",vocab:"Repeat Block, dynamic, multiple rows"},
+{zh:"这个 Set Values 元素在步骤完成时自动设置几个字段的默认值。",en:"This Set Values element automatically sets default values for a few fields when the step completes.",vocab:"Set Values, default value, auto-set"},
+{zh:"OmniScript 的 Pre-Seed JSON 可以在打开时预填一些初始数据。",en:"OmniScript's Pre-Seed JSON lets you pre-populate some initial data when it opens.",vocab:"Pre-Seed JSON, pre-populate, initial data"},
+{zh:"我用了 Disclosure 元素把可选的额外信息折叠起来，不影响主流程。",en:"I used a Disclosure element to collapse optional extra information so it doesn't disrupt the main flow.",vocab:"Disclosure, collapse, optional"},
+{zh:"这个 OmniScript 嵌在 FlexCard 的 Action 里，点击按钮就能弹出来。",en:"This OmniScript is embedded in a FlexCard Action and pops up when the button is clicked.",vocab:"FlexCard, Action, embedded"},
+{zh:"我给 Date 字段加了最小日期限制，用户不能选今天之前的日期。",en:"I set a minimum date restriction on the Date field so users can't pick a date before today.",vocab:"Date, minimum date, restriction"},
+{zh:"这个 OmniScript 的输出数据会被用来触发后续的 Integration Procedure。",en:"The output data from this OmniScript will be used to trigger a subsequent Integration Procedure.",vocab:"output data, trigger, Integration Procedure"},
+// ===== 301-320: OmniScript 高级逻辑 =====
+{zh:"这个 Conditional View 的条件是嵌套的，建议用 JSON Condition 来简化逻辑。",en:"The conditions in this Conditional View are nested. I'd suggest using a JSON Condition to simplify the logic.",vocab:"Conditional View, nested condition, JSON Condition"},
+{zh:"我用了 Custom LWC 元素嵌入到 OmniScript 里，实现了标准组件没有的交互效果。",en:"I embedded a Custom LWC element into the OmniScript to achieve interactions that aren't possible with standard components.",vocab:"Custom LWC, embedded, OmniScript"},
+{zh:"这个 OmniScript 用了 Multi-Select Picklist，用户可以选多个值。",en:"This OmniScript uses a Multi-Select Picklist so users can pick multiple values.",vocab:"Multi-Select Picklist, multiple values"},
+{zh:"步骤跳转用了 Conditional Navigation，根据第一步的选择直接跳到对应的步骤。",en:"The navigation uses Conditional Navigation to jump directly to the right step based on what was selected in step one.",vocab:"Conditional Navigation, step jump, branching"},
+{zh:"我在 Formula 里用了 CONCAT 函数把几个字段的值拼成一个显示名称。",en:"I used the CONCAT function in a Formula to join several field values into a single display name.",vocab:"CONCAT, Formula, string"},
+{zh:"这个 OmniScript 有一个 Read-Only 步骤，专门用来让用户确认填写的信息。",en:"This OmniScript has a Read-Only step for users to review and confirm the information they've entered.",vocab:"Read-Only, review step, confirmation"},
+{zh:"我用了 OmniScript 的 Session Variables 来传递当前用户的 Profile 信息。",en:"I used OmniScript Session Variables to pass through the current user's profile information.",vocab:"Session Variables, user profile, pass data"},
+{zh:"这个 Script 有十个步骤，建议拆成 Sub OmniScript 来降低复杂度。",en:"This script has ten steps. I'd suggest breaking it into Sub OmniScripts to keep the complexity manageable.",vocab:"Sub OmniScript, decompose, complexity"},
+{zh:"我配置了 Error Handling，在 DataRaptor 调用失败时显示一条友好的错误消息。",en:"I configured Error Handling to show a user-friendly error message when the DataRaptor call fails.",vocab:"Error Handling, DataRaptor, user-friendly"},
+{zh:"这里用了 Decision Matrix 来根据用户的输入决定下一步的走向。",en:"A Decision Matrix is used here to determine the next path based on the user's input.",vocab:"Decision Matrix, branching, input"},
+{zh:"这个 OmniScript 的 response transformation 把后端返回的 JSON 转成了前端需要的格式。",en:"The response transformation in this OmniScript converts the backend JSON into the format the frontend needs.",vocab:"response transformation, JSON, format"},
+{zh:"我在 OmniScript 里用了 Save State，让用户可以保存进度后续再回来继续。",en:"I used Save State in the OmniScript so users can save their progress and come back to it later.",vocab:"Save State, resume, progress"},
+{zh:"这个 Action 按钮触发了一个 Apex Remote Action，调用结果直接显示在当前步骤里。",en:"This Action button triggers an Apex Remote Action, and the result is displayed right on the current step.",vocab:"Action, Apex Remote Action, result"},
+{zh:"我给这个 OmniScript 加了 Theme，让整体风格跟平台的 Lightning 界面一致。",en:"I applied a Theme to this OmniScript so it looks consistent with the platform's Lightning interface.",vocab:"Theme, LWC OmniScript, consistent"},
+{zh:"这个 Validation 是 Formula 类型的，可以写更复杂的条件组合。",en:"This Validation is Formula-based, which lets you write more complex condition combinations.",vocab:"Formula validation, complex conditions"},
+{zh:"我在最后一步加了 Summary 元素，汇总用户填写的所有关键信息。",en:"I added a Summary element on the final step to show a recap of all the key information the user entered.",vocab:"Summary element, recap, final step"},
+{zh:"这个 OmniScript 是 FlexCard 弹出的 Modal，宽度和高度需要在 FlexCard 那边配置。",en:"This OmniScript is launched as a modal from a FlexCard, and the width and height are configured on the FlexCard side.",vocab:"Modal, FlexCard, width/height"},
+{zh:"我用了 GetLabelFromValue 函数把 API Name 转成用户可读的 Label 显示。",en:"I used the GetLabelFromValue function to convert the API Name into a user-readable label for display.",vocab:"GetLabelFromValue, API Name, Label"},
+{zh:"这个 OmniScript 的 LWC 版本在 API v56 以上才支持，注意 org 版本。",en:"The LWC version of this OmniScript requires API v56 or above, so check the org version.",vocab:"LWC OmniScript, API version, compatibility"},
+{zh:"Pre-Conditions 决定了这个步骤是否显示，类似于 Conditional View 但作用于整个步骤。",en:"Pre-Conditions determine whether a step is shown at all, similar to Conditional View but applied to the whole step.",vocab:"Pre-Conditions, step visibility, conditional"},
+// ===== 321-340: FlexCards =====
+{zh:"这个 FlexCard 从 DataRaptor Extract 获取数据，然后在卡片上展示。",en:"This FlexCard pulls data from a DataRaptor Extract and displays it on the card.",vocab:"FlexCard, DataRaptor Extract, data source"},
+{zh:"我加了一个 State 来控制卡片在不同条件下显示不同的内容布局。",en:"I added a State to control different content layouts on the card under different conditions.",vocab:"State, conditional layout, FlexCard"},
+{zh:"这个 FlexCard 有三个 Action：Edit、Delete 和 Launch OmniScript。",en:"This FlexCard has three Actions: Edit, Delete, and Launch OmniScript.",vocab:"FlexCard Action, Edit, OmniScript"},
+{zh:"我在 FlexCard 里用了 Conditional Rendering 来根据字段值显示不同的图标。",en:"I used Conditional Rendering in the FlexCard to show different icons based on field values.",vocab:"Conditional Rendering, icon, field value"},
+{zh:"这个 Child Card 嵌在父 FlexCard 里，展示相关的子对象记录列表。",en:"This Child Card is embedded in the parent FlexCard and shows a list of related child records.",vocab:"Child Card, parent FlexCard, nested"},
+{zh:"我用了 Merge Fields 把数据源的字段值插入到卡片的显示文本里。",en:"I used Merge Fields to inject data source field values into the card's display text.",vocab:"Merge Fields, data source, display text"},
+{zh:"FlexCard 的 Custom Style 可以覆盖默认样式，但要和品牌规范保持一致。",en:"FlexCard Custom Styles can override the defaults, but keep them consistent with brand guidelines.",vocab:"Custom Style, override, branding"},
+{zh:"我给这个 Action 加了 Confirmation Dialog，防止用户误操作删除记录。",en:"I added a Confirmation Dialog to this Action to prevent users from accidentally deleting records.",vocab:"Confirmation Dialog, delete, accidental"},
+{zh:"FlexCard 支持 List 模式，可以同时展示多条记录，每条都是独立的卡片实例。",en:"FlexCards support List mode to display multiple records at once, with each one as its own card instance.",vocab:"List mode, multiple records, card instance"},
+{zh:"我配置了 Sort Order，让列表按照 CreatedDate 降序显示最新记录。",en:"I configured Sort Order to display the list in descending CreatedDate order so the most recent records show first.",vocab:"Sort Order, descending, CreatedDate"},
+{zh:"这个 FlexCard 的数据源用了 Integration Procedure，因为需要聚合多个来源的数据。",en:"This FlexCard uses an Integration Procedure as its data source because it needs to aggregate data from multiple sources.",vocab:"Integration Procedure, data source, aggregate"},
+{zh:"这个 Action 打开了一个外部链接，用了 Merge Field 把记录 ID 拼到 URL 里。",en:"This Action opens an external link with the record ID spliced into the URL using a Merge Field.",vocab:"external link, Merge Field, record ID"},
+{zh:"我把 FlexCard 的刷新触发器设成了 Record Update，记录变更后卡片自动刷新。",en:"I set the FlexCard's refresh trigger to Record Update so the card automatically refreshes when the record changes.",vocab:"refresh trigger, Record Update, auto-refresh"},
+{zh:"FlexCard 的 Flyout 模式可以在当前页面展开更多信息，不需要跳转页面。",en:"FlexCard Flyout mode lets you expand more information inline without navigating away from the page.",vocab:"Flyout, inline expand, navigation"},
+{zh:"我在 FlexCard 里用了 Date Format 函数把日期格式化成用户友好的展示格式。",en:"I used the Date Format function in the FlexCard to convert the date into a user-friendly display format.",vocab:"Date Format, format function, display"},
+{zh:"这个 FlexCard 部署到了 Account 的 Record Page，作为 Lightning App Builder 的组件使用。",en:"This FlexCard is deployed on the Account Record Page as a component in the Lightning App Builder.",vocab:"Record Page, Lightning App Builder, deploy"},
+{zh:"Omnistudio 的 Design System 提供了统一的颜色和字体设置，确保 FlexCard 风格一致。",en:"OmniStudio's Design System provides unified color and font settings to keep FlexCard styling consistent.",vocab:"Design System, OmniStudio, consistent"},
+{zh:"我给这个卡片加了 Loading State，在数据加载时显示一个 spinner。",en:"I added a Loading State to the card to show a spinner while the data loads.",vocab:"Loading State, spinner, data loading"},
+{zh:"FlexCard 的 CSS 作用域只在卡片内部，不会影响页面上其他组件的样式。",en:"FlexCard CSS is scoped to the card itself and won't affect other components on the page.",vocab:"CSS scope, isolation, styling"},
+{zh:"这个 Action Type 是 Navigation，点击后跳转到对应的记录详情页。",en:"This Action Type is Navigation, which takes you to the corresponding record detail page when clicked.",vocab:"Navigation Action, record detail, FlexCard"},
+// ===== 341-360: DataRaptor =====
+{zh:"DataRaptor Extract 用来从 Salesforce 对象里查询数据，并格式化成 JSON 输出。",en:"DataRaptor Extract is used to query data from Salesforce objects and output it as formatted JSON.",vocab:"DataRaptor Extract, query, JSON output"},
+{zh:"DataRaptor Load 用来把数据写回到 Salesforce 对象，相当于 DML 操作。",en:"DataRaptor Load writes data back to Salesforce objects, which is essentially a DML operation.",vocab:"DataRaptor Load, write, DML"},
+{zh:"DataRaptor Transform 用来在数据流之间做格式转换，不读写 Salesforce 数据。",en:"DataRaptor Transform handles format conversion between data flows without reading or writing Salesforce data.",vocab:"DataRaptor Transform, format conversion, mapping"},
+{zh:"我在 Extract 里配置了 Filter 来只取特定条件下的记录，减少数据量。",en:"I configured a Filter in the Extract to only pull records that meet specific criteria, which reduces the data volume.",vocab:"Filter, criteria, DataRaptor Extract"},
+{zh:"这个 Extract 用了 Object Path 来展开关联对象的字段，比如 Account.Name。",en:"This Extract uses Object Path to expand fields from related objects, like Account.Name.",vocab:"Object Path, related object, field expansion"},
+{zh:"DataRaptor 的 Input/Output 节点命名要规范，方便在 Integration Procedure 里引用。",en:"Name the Input/Output nodes in DataRaptor consistently so they're easy to reference in Integration Procedures.",vocab:"Input/Output node, naming, reference"},
+{zh:"我加了 Lookup 映射来在 Transform 里把一个值转换成另一个对应的值。",en:"I added a Lookup mapping in the Transform to convert one value to its corresponding mapped value.",vocab:"Lookup mapping, value mapping, Transform"},
+{zh:"这个 Load 配置了 upsert，用 External ID 来匹配记录，有就更新没就创建。",en:"This Load is configured for upsert using External ID to match records, updating existing ones and creating new ones.",vocab:"upsert, External ID, DataRaptor Load"},
+{zh:"DataRaptor 的 Preview 功能可以用测试数据快速验证配置是否正确。",en:"DataRaptor's Preview feature lets you quickly validate the configuration with test data.",vocab:"Preview, test data, validate"},
+{zh:"我在 Extract 里用了 Child Relationship 来同时获取子对象的数据。",en:"I used a Child Relationship in the Extract to fetch child object data at the same time.",vocab:"Child Relationship, Extract, related data"},
+{zh:"这个 Load 配置里漏掉了一个必填字段，导致保存时失败了。",en:"A required field was left out of this Load config, which is causing the save to fail.",vocab:"required field, Load config, save failure"},
+{zh:"DataRaptor Transform 的 Formula 支持标准的 Salesforce Formula 语法，很灵活。",en:"DataRaptor Transform Formulas support standard Salesforce Formula syntax, which is pretty flexible.",vocab:"Formula, Transform, Salesforce syntax"},
+{zh:"我配置了 Batch Size 来控制 Load 每次处理的记录数，避免超限。",en:"I configured the Batch Size to control how many records the Load processes at a time and avoid hitting limits.",vocab:"Batch Size, DataRaptor Load, limit"},
+{zh:"这个 Extract 的 JSON Output Structure 需要和 Integration Procedure 的期望输入格式匹配。",en:"The JSON Output Structure of this Extract needs to match the expected input format of the Integration Procedure.",vocab:"JSON Output Structure, Input format, IP"},
+{zh:"我在 Load 里开了 Allow Null 选项，这样空值字段不会被忽略而是清掉原有数据。",en:"I turned on Allow Null in the Load so empty fields clear out the existing data instead of being ignored.",vocab:"Allow Null, null handling, DataRaptor Load"},
+{zh:"DataRaptor Transform 支持 Multiple Input 节点，可以合并多个数据来源。",en:"DataRaptor Transform supports multiple input nodes so you can merge data from multiple sources.",vocab:"Multiple Input, merge, Transform"},
+{zh:"这个 Extract 跑起来比较慢，可能是 Filter 条件走的字段没有索引。",en:"This Extract is running slowly. The filter field probably isn't indexed.",vocab:"slow Extract, indexed field, performance"},
+{zh:"版本控制里的 DataRaptor 定义文件是 JSON 格式的，可以 diff 变更内容。",en:"The DataRaptor definition file in version control is JSON, so you can diff the changes.",vocab:"version control, JSON, diff"},
+{zh:"我用了 Hierarchical Extract 来处理多层嵌套的 JSON 输出结构。",en:"I used a Hierarchical Extract to handle a multi-level nested JSON output structure.",vocab:"Hierarchical Extract, nested JSON, output"},
+{zh:"DataRaptor 是 OmniStudio 的核心，几乎所有的数据读写操作都会用到它。",en:"DataRaptor is at the core of OmniStudio. Almost all data read and write operations go through it.",vocab:"DataRaptor, core, OmniStudio"},
+// ===== 361-380: Integration Procedure =====
+{zh:"Integration Procedure 是 OmniStudio 里用来编排多步数据操作的服务层组件。",en:"Integration Procedures are the service layer component in OmniStudio for orchestrating multi-step data operations.",vocab:"Integration Procedure, orchestration, service layer"},
+{zh:"这个 IP 里有三个步骤：先查询账户，再检查库存，最后创建订单。",en:"This IP has three steps: first query the Account, then check inventory, then create the Order.",vocab:"IP, steps, orchestration"},
+{zh:"DataRaptor Action 是 IP 里最常用的步骤类型，用来调用 DataRaptor。",en:"DataRaptor Action is the most common step type in an IP. It's used to call a DataRaptor.",vocab:"DataRaptor Action, IP step, call"},
+{zh:"我用了 HTTP Action 步骤来调用外部 REST API，把结果存到 IP 的上下文里。",en:"I used an HTTP Action step to call an external REST API and store the result in the IP's context.",vocab:"HTTP Action, external API, context"},
+{zh:"这个 Apex Action 步骤调用了一个 @InvocableMethod，用来处理复杂的业务逻辑。",en:"This Apex Action step calls an @InvocableMethod to handle complex business logic.",vocab:"Apex Action, @InvocableMethod, business logic"},
+{zh:"我用了 Conditional Step 来根据上一步的结果决定是否执行下一个步骤。",en:"I used a Conditional Step to decide whether to execute the next step based on the result of the previous one.",vocab:"Conditional Step, branching, result"},
+{zh:"Set Values Action 用来在 IP 里设置或覆盖上下文变量，非常常用。",en:"Set Values Action is used to set or override context variables within an IP. You'll use it all the time.",vocab:"Set Values, context variable, IP"},
+{zh:"这个 IP 开启了缓存，相同输入的结果会被缓存一段时间，减少重复查询。",en:"This IP has caching enabled. Results for the same inputs are cached for a period, which reduces repeated queries.",vocab:"caching, cache, IP performance"},
+{zh:"Merge Input 步骤可以把多个步骤的输出合并到一个 JSON 结构里。",en:"The Merge Input step combines the output from multiple steps into a single JSON structure.",vocab:"Merge Input, combine, JSON output"},
+{zh:"我用了 Loop Action 来循环处理一组记录，对每条记录执行相同的操作。",en:"I used a Loop Action to iterate over a set of records and perform the same operation on each one.",vocab:"Loop Action, iterate, records"},
+{zh:"这个 IP 的输入参数在 OmniScript 里通过 Remote Action 传进来。",en:"The input parameters for this IP are passed in from OmniScript via Remote Action.",vocab:"input parameters, Remote Action, OmniScript"},
+{zh:"Error Step 用来在出现错误时设置错误信息并终止 IP 的执行。",en:"Error Step is used to set an error message and stop the IP execution when something goes wrong.",vocab:"Error Step, terminate, error message"},
+{zh:"这个 IP 调用了另一个 IP 作为子程序，实现了逻辑复用。",en:"This IP calls another IP as a subroutine, which allows logic reuse.",vocab:"IP, subroutine, reuse"},
+{zh:"我在 IP 里用了 Matrix Action 来做基于规则的决策，替代了硬编码的条件判断。",en:"I used a Matrix Action in the IP to handle rule-based decisions instead of hard-coded conditions.",vocab:"Matrix Action, rule-based, decision"},
+{zh:"IP 执行失败了，我在 OmniStudio Debug 面板里看到是第三步的 HTTP 调用超时了。",en:"The IP failed. I can see in the OmniStudio Debug panel that the HTTP call in step three timed out.",vocab:"IP failure, Debug panel, timeout"},
+{zh:"这个 IP 会被多个 OmniScript 和 FlexCard 复用，所以设计上要保持通用性。",en:"This IP is reused by multiple OmniScripts and FlexCards, so the design needs to stay generic.",vocab:"reusable, generic, shared IP"},
+{zh:"IP 里的变量引用格式是 %VariableName%，注意大小写要和定义的一致。",en:"Variables in an IP are referenced with %VariableName%. The casing needs to match the definition exactly.",vocab:"variable reference, %%, case-sensitive"},
+{zh:"我开了 Async IP 来避免长时间运行的操作阻塞 OmniScript 的提交流程。",en:"I enabled the Async IP to prevent long-running operations from blocking the OmniScript submission flow.",vocab:"Async IP, non-blocking, async"},
+{zh:"这个 IP 被 Scheduled Flow 定时触发，每天跑一次数据同步。",en:"This IP is triggered daily by a Scheduled Flow to run a data sync.",vocab:"Scheduled Flow, trigger, data sync"},
+{zh:"IP 的 Output 节点要精简，只返回调用方需要的字段，不要把所有数据都传出去。",en:"Keep the IP's Output nodes lean and only return the fields the caller actually needs. Don't pass everything through.",vocab:"Output node, lean, caller"},
+// ===== 381-400: Calculation Procedures =====
+{zh:"Calculation Procedure 用来实现复杂的定价、折扣或评分规则，不需要写代码。",en:"Calculation Procedures let you implement complex pricing, discount, or scoring rules without writing code.",vocab:"Calculation Procedure, pricing, no-code"},
+{zh:"我配置了一个 Calculation Matrix 来根据产品类型和数量决定适用的折扣比例。",en:"I configured a Calculation Matrix to determine the applicable discount rate based on product type and quantity.",vocab:"Calculation Matrix, discount, product type"},
+{zh:"这个 Procedure 有多个步骤，每一步都在前一步的基础上累积计算。",en:"This Procedure has multiple steps, and each one builds on the result of the previous step.",vocab:"procedure steps, cumulative, calculation"},
+{zh:"Decision Matrix 里的每一行是一条规则，按优先级从上到下匹配，找到第一条符合的就停止。",en:"Each row in the Decision Matrix is a rule, matched top to bottom by priority. It stops at the first match.",vocab:"Decision Matrix, priority, rule matching"},
+{zh:"我用了 Aggregation 步骤来对一组数字做求和，比如计算总费用。",en:"I used an Aggregation step to sum up a group of numbers, like calculating the total cost.",vocab:"Aggregation, sum, total cost"},
+{zh:"Calculation Procedure 可以被 OmniScript 和 Integration Procedure 通过 Action 来调用。",en:"Calculation Procedures can be invoked via Actions from both OmniScript and Integration Procedures.",vocab:"invoke, Action, OmniScript, IP"},
+{zh:"这个 Formula 步骤用了条件表达式，根据评分结果返回不同的风险等级。",en:"This Formula step uses a conditional expression to return different risk levels based on the score.",vocab:"Formula, conditional, risk level"},
+{zh:"Matrix 的行里用了通配符，这样可以匹配没有精确对应值的情况。",en:"The matrix rows use wildcards to handle cases where there's no exact matching value.",vocab:"wildcard, Matrix, fallback"},
+{zh:"Calculation Procedure 的版本管理很重要，上线前要确认用的是正确的激活版本。",en:"Version management for Calculation Procedures is important. Make sure you're on the right activated version before going live.",vocab:"version, activated, Calculation Procedure"},
+{zh:"我在测试 Procedure 时用了 Procedure Testing 面板来传入测试输入，验证输出是否正确。",en:"I used the Procedure Testing panel to pass in test inputs and verify the output is correct.",vocab:"Procedure Testing, test input, verify output"},
+{zh:"这个步骤的输出会作为下一个步骤的输入，变量名要保持一致。",en:"The output of this step becomes the input for the next one, so the variable names need to be consistent.",vocab:"output, input, variable name"},
+{zh:"我设置了 Error Handling，当输入值不符合预期时返回默认值而不是报错。",en:"I set up Error Handling to return a default value instead of throwing an error when the input is unexpected.",vocab:"Error Handling, default value, fallback"},
+{zh:"Calculation Matrix 的数据可以导入 CSV，方便批量维护规则。",en:"Calculation Matrix data can be imported via CSV, which makes bulk rule maintenance easier.",vocab:"CSV import, matrix data, bulk maintenance"},
+{zh:"这个 Procedure 的计算逻辑和原来的 Apex 类完全等价，我们用它替换掉 Apex 了。",en:"The calculation logic in this Procedure is equivalent to the original Apex class. We replaced the Apex with it.",vocab:"equivalent, replace, Apex migration"},
+{zh:"Range 条件在 Matrix 里用来匹配数值区间，比如金额在 0 到 1000 之间。",en:"Range conditions in the Matrix are used to match numeric ranges, like amounts between 0 and 1000.",vocab:"Range condition, numeric range, Matrix"},
+{zh:"Calculation Step 支持引用 Custom Settings 里的配置值，避免硬编码。",en:"Calculation Steps support referencing values from Custom Settings to avoid hard-coding.",vocab:"Custom Settings, reference, no hard-code"},
+{zh:"这个 Procedure 被多个产品线共用，改动之前要评估对所有场景的影响。",en:"This Procedure is shared across multiple product lines. Assess the impact on all scenarios before making changes.",vocab:"shared, impact assessment, product line"},
+{zh:"IP 里调用 Calculation Procedure 的方式是用 Calculation Procedure Action 步骤。",en:"To call a Calculation Procedure from an IP, use a Calculation Procedure Action step.",vocab:"Calculation Procedure Action, IP, invoke"},
+{zh:"我把经常变化的阈值从代码里提到了 Calculation Matrix 里，运营团队可以自己维护。",en:"I moved frequently changing thresholds from the code into a Calculation Matrix so the operations team can maintain them.",vocab:"threshold, matrix, ops team"},
+{zh:"这个 Procedure 计算结果不对，我在 Testing 面板里一步一步追踪每个步骤的中间值。",en:"The Procedure is giving wrong results. I'm stepping through each stage in the Testing panel to trace the intermediate values.",vocab:"Testing panel, intermediate value, trace"},
+// ===== 401-420: OmniStudio 调试 =====
+{zh:"OmniStudio 有个内置的 Debug 模式，可以在运行时看到每个步骤的输入和输出。",en:"OmniStudio has a built-in Debug mode that shows you the input and output of each step at runtime.",vocab:"Debug mode, runtime, input/output"},
+{zh:"我打开了 OmniScript 的 Debug Panel，看到是第三步的 DataRaptor 返回了空数据。",en:"I opened the OmniScript Debug Panel and saw the DataRaptor in step three is returning empty data.",vocab:"Debug Panel, OmniScript, empty data"},
+{zh:"Integration Procedure 的 Debug 输出会显示每个 Action 的执行状态和输出值。",en:"The IP Debug output shows the execution status and output values for each Action.",vocab:"IP Debug, execution status, output value"},
+{zh:"我用 DataRaptor 的 Preview 功能快速验证了一下数据映射是否正确。",en:"I used DataRaptor's Preview to quickly check whether the data mapping is correct.",vocab:"Preview, data mapping, validate"},
+{zh:"这个 OmniScript 在移动端有布局问题，我打开了响应式预览来排查。",en:"This OmniScript has a layout issue on mobile. I opened the responsive preview to investigate.",vocab:"mobile, layout issue, responsive preview"},
+{zh:"IP 里有个步骤失败了但没有抛出错误，我加了 Error Check 来捕获静默失败。",en:"One step in the IP failed silently without throwing an error. I added an Error Check to catch silent failures.",vocab:"silent failure, Error Check, IP"},
+{zh:"我在 DataRaptor Transform 里加了日志输出，帮助追踪数据转换的中间结果。",en:"I added log outputs in the DataRaptor Transform to help trace the intermediate results of the data conversion.",vocab:"log output, Transform, trace"},
+{zh:"FlexCard 显示了空白，我检查了一下，发现 DataRaptor 返回的节点名和 FlexCard 里引用的不一致。",en:"The FlexCard is showing blank. I checked and found the node name returned by DataRaptor doesn't match what the FlexCard is referencing.",vocab:"blank FlexCard, node name mismatch, DataRaptor"},
+{zh:"我用了 OmniStudio Inspector Chrome 插件来实时查看 OmniScript 的数据状态。",en:"I used the OmniStudio Inspector Chrome extension to view the OmniScript data state in real time.",vocab:"OmniStudio Inspector, Chrome extension, data state"},
+{zh:"这个 Remote Action 调用失败了，在网络面板里看到返回了 500，说明后端有 Apex 报错。",en:"This Remote Action call failed. The Network panel shows a 500 response, which means there's an Apex error on the backend.",vocab:"Remote Action, 500, Apex error"},
+{zh:"IP 的某个步骤被跳过了，我检查了 Conditional 配置，发现条件写反了。",en:"One of the IP steps was being skipped. I checked the Conditional config and found the condition was inverted.",vocab:"step skipped, Conditional, inverted"},
+{zh:"我用 Test Coverage Report 检查了哪些 OmniStudio 组件没有被测试覆盖到。",en:"I used the Test Coverage Report to check which OmniStudio components aren't covered by tests.",vocab:"Test Coverage Report, component coverage"},
+{zh:"DataRaptor Load 在沙盒里能跑通，但在生产上报了 FIELD_INTEGRITY_EXCEPTION，需要检查数据。",en:"The DataRaptor Load works in the sandbox but throws a FIELD_INTEGRITY_EXCEPTION in production. The data needs to be checked.",vocab:"FIELD_INTEGRITY_EXCEPTION, production, data integrity"},
+{zh:"这个问题我在本地 Debug 里能重现，但用户账号上不行，应该是权限导致的。",en:"I can reproduce this in my Debug session, but not on the user's account, which points to a permissions issue.",vocab:"reproduce, user account, permissions"},
+{zh:"我在 IP 里把每个关键步骤的输出都打印到了 Log，这样出问题时方便追溯。",en:"I'm logging the output of each key step in the IP so it's easy to trace back when something goes wrong.",vocab:"log, output, trace"},
+{zh:"OmniScript 在提交时报了一个 JSON Parse Error，是某个字段传了非法字符。",en:"The OmniScript threw a JSON Parse Error on submission. One of the fields had an invalid character.",vocab:"JSON Parse Error, invalid character, submission"},
+{zh:"我对 IP 里的 HTTP Action 加了超时配置，避免外部 API 无响应时 IP 一直挂着。",en:"I added a timeout config to the HTTP Action in the IP to prevent it from hanging indefinitely if the external API stops responding.",vocab:"timeout, HTTP Action, hang"},
+{zh:"这个 DataRaptor Extract 返回的数组是空的，但数据库里明明有记录，过滤条件有问题。",en:"The DataRaptor Extract is returning an empty array, but the records are definitely there in the database. The filter condition is the issue.",vocab:"empty array, filter condition, DataRaptor"},
+{zh:"FlexCard 的 Action 没有触发，我发现是 Condition 设置阻止了 Action 的执行。",en:"The FlexCard Action wasn't firing. I found a Condition setting was blocking it from executing.",vocab:"Action not firing, Condition, blocking"},
+{zh:"我用了 Omni Process 日志来审查哪些 IP 运行失败了，以及失败的原因。",en:"I used the Omni Process logs to review which IPs had failed runs and why.",vocab:"Omni Process log, failure review, audit"},
+// ===== 421-440: OmniStudio 部署 =====
+{zh:"OmniStudio 组件可以通过 DataPack 导出和导入，用于跨 org 部署。",en:"OmniStudio components can be exported and imported as DataPacks for cross-org deployment.",vocab:"DataPack, export, import"},
+{zh:"我用 vlocity-build 工具把 DataPack 部署到目标 org，整合到了 CI/CD 流水线里。",en:"I used the vlocity-build tool to deploy the DataPack to the target org and integrated it into the CI/CD pipeline.",vocab:"vlocity-build, DataPack, CI/CD"},
+{zh:"部署前需要检查目标 org 的版本是否支持这些 OmniStudio 功能，版本不对会报错。",en:"Before deploying, check that the target org's version supports these OmniStudio features. A version mismatch will cause errors.",vocab:"version compatibility, target org, OmniStudio"},
+{zh:"这个 DataPack 包含了 OmniScript、FlexCard 和对应的 DataRaptor，需要整包部署。",en:"This DataPack contains the OmniScript, FlexCard, and associated DataRaptors. They need to be deployed together.",vocab:"DataPack, full deployment, dependency"},
+{zh:"我在部署后用 Activation 步骤激活了新版本的 OmniScript 和 FlexCard。",en:"After deploying, I ran the Activation step to activate the new versions of the OmniScript and FlexCard.",vocab:"Activation, activate, new version"},
+{zh:"DataPack 里有依赖的 Custom Object，目标 org 里必须先有这个对象才能导入。",en:"The DataPack has a dependency on a Custom Object that must already exist in the target org before importing.",vocab:"dependency, Custom Object, prerequisite"},
+{zh:"我们用了 Source Control 来版本化管理所有的 OmniStudio DataPacks。",en:"We use Source Control to version all OmniStudio DataPacks.",vocab:"Source Control, versioning, DataPack"},
+{zh:"部署失败了，报了 dependency conflict，说明有个引用的组件在目标 org 里不存在。",en:"The deployment failed with a dependency conflict, which means a referenced component doesn't exist in the target org.",vocab:"dependency conflict, deployment failure, missing component"},
+{zh:"我们分 UAT 和 Prod 两个阶段部署，UAT 没问题再推到 Prod。",en:"We deploy in two phases: UAT first, then Prod once UAT passes.",vocab:"phased deployment, UAT, Prod"},
+{zh:"DataPack 导出的时候我选了 Full Export，确保所有子组件都包含进去了。",en:"When exporting the DataPack, I chose Full Export to make sure all child components are included.",vocab:"Full Export, sub-components, DataPack"},
+{zh:"我们在部署 Pipeline 里加了一步自动运行 OmniStudio 测试，失败就阻断部署。",en:"We added a step in the deployment pipeline to automatically run OmniStudio tests and block deployment if they fail.",vocab:"automated test, pipeline, block deployment"},
+{zh:"这个组件依赖了一个 Named Credential，目标 org 里需要提前配置好。",en:"This component depends on a Named Credential that needs to be configured in the target org beforehand.",vocab:"Named Credential, pre-configure, dependency"},
+{zh:"OmniStudio 组件的激活状态不会随 DataPack 一起迁移，需要手动激活。",en:"The activated status of OmniStudio components isn't carried over with the DataPack. You need to activate them manually.",vocab:"activation status, manual activation, DataPack"},
+{zh:"我们把 OmniStudio 和 Apex 的部署合并在同一个 Pipeline 里，统一管理。",en:"We combined OmniStudio and Apex deployment in the same pipeline for unified management.",vocab:"unified pipeline, combined deployment"},
+{zh:"部署后要验证所有的 OmniScript 和 FlexCard 在目标 org 里正常展示和运行。",en:"After deployment, verify that all OmniScripts and FlexCards display and function correctly in the target org.",vocab:"post-deployment, verification, smoke test"},
+{zh:"我们用了 Environment Variable 来处理不同 org 之间的差异，比如 API endpoint 地址。",en:"We use Environment Variables to handle differences between orgs, like API endpoint URLs.",vocab:"Environment Variable, cross-org, API endpoint"},
+{zh:"DataPack 文件放在 Git 里管理，每次改动都有 diff 记录，方便审查。",en:"DataPack files are managed in Git so every change has a diff record for easy review.",vocab:"Git, diff, change review"},
+{zh:"部署窗口很短，我们提前准备好了回滚脚本，万一出问题可以快速恢复。",en:"The deployment window is tight, so we prepared a rollback script in advance in case something goes wrong.",vocab:"rollback, deployment window, contingency"},
+{zh:"这个 IP 在目标 org 里没有激活的版本，部署后需要手动激活一下。",en:"This IP doesn't have an activated version in the target org yet. It needs to be manually activated after deployment.",vocab:"IP, activated version, manual"},
+{zh:"我们的 DataPack 按功能模块分包，避免一次性部署太多组件增加风险。",en:"We package DataPacks by feature module to avoid deploying too many components at once and increasing risk.",vocab:"modular, DataPack, risk management"},
+// ===== 441-460: Vlocity / 行业云场景 =====
+{zh:"Vlocity 现在已经更名为 OmniStudio，但老项目里还是会见到 Vlocity 这个叫法。",en:"Vlocity has been rebranded as OmniStudio, but you'll still see the Vlocity name in older projects.",vocab:"Vlocity, OmniStudio, rebranding"},
+{zh:"这个行业云解决方案是基于 Salesforce 通信云构建的，有专门的数据模型。",en:"This industry cloud solution is built on Salesforce Communications Cloud and has a specialized data model.",vocab:"Communications Cloud, industry cloud, data model"},
+{zh:"Product Catalog 在 Vlocity 里是核心概念，产品、价格和配置规则都在这里管理。",en:"Product Catalog is a core concept in Vlocity. Products, pricing, and configuration rules are all managed here.",vocab:"Product Catalog, Vlocity, pricing"},
+{zh:"CPQ 流程包括配置、报价和下单，OmniStudio 的 OmniScript 用来驱动整个流程。",en:"The CPQ process covers configure, price, and quote. OmniScript drives the entire flow in OmniStudio.",vocab:"CPQ, configure, price, quote"},
+{zh:"这个 Price Plan 里有分级定价逻辑，不同消费量对应不同的单价。",en:"This Price Plan has tiered pricing logic where different consumption levels map to different unit prices.",vocab:"Price Plan, tiered pricing, consumption"},
+{zh:"Contract 管理在这个解决方案里很关键，包括签约、变更和续签流程。",en:"Contract management is critical in this solution, covering signing, amendments, and renewal flows.",vocab:"Contract, amendment, renewal"},
+{zh:"这个 Order Management 流程要处理从下单到履约的全链路状态流转。",en:"This Order Management flow handles the full lifecycle from order placement to fulfillment.",vocab:"Order Management, fulfillment, lifecycle"},
+{zh:"Industry 数据模型的字段命名和标准 Salesforce 对象差异较大，需要熟悉一下。",en:"The field naming in the Industry data model differs quite a bit from standard Salesforce objects. Worth getting familiar with.",vocab:"Industry data model, field naming, difference"},
+{zh:"这个 Service Request 流程用 OmniScript 驱动，覆盖了十几种服务类型。",en:"This Service Request flow is driven by OmniScript and covers over a dozen service types.",vocab:"Service Request, OmniScript, service type"},
+{zh:"我们需要根据行业云的 best practice 来设计数据结构，不要随意自定义对象。",en:"We need to follow industry cloud best practices when designing the data structure and avoid creating unnecessary custom objects.",vocab:"best practice, industry cloud, data design"},
+{zh:"这个账单模块用了 Vlocity 的 Invoice 对象，有一套标准的生成和发送流程。",en:"This billing module uses the Vlocity Invoice object and has a standard generation and delivery flow.",vocab:"Invoice, billing module, Vlocity"},
+{zh:"我们把客户的通信套餐用 Offering 对象来建模，包含了所有服务条款。",en:"We modeled the customer's communication plan using the Offering object, which contains all the service terms.",vocab:"Offering, communication plan, service terms"},
+{zh:"这个迁移涉及到把老系统的历史合同数据导入到 Vlocity 的 Contract 对象里。",en:"This migration involves importing historical contract data from the legacy system into the Vlocity Contract object.",vocab:"migration, historical data, Contract"},
+{zh:"行业云的升级要特别注意 deprecated 的功能和 API，升级前要看 release notes。",en:"Industry cloud upgrades need extra care around deprecated features and APIs. Always check the release notes before upgrading.",vocab:"upgrade, deprecated, release notes"},
+{zh:"我们用了 Vlocity Cards 来展示用户当前的套餐详情，支持实时刷新。",en:"We're using Vlocity Cards to display the user's current plan details with real-time refresh support.",vocab:"Vlocity Cards, plan details, real-time"},
+{zh:"这个场景需要配置 Product Bundle，把几个独立产品打包成一个组合套餐。",en:"This scenario requires configuring a Product Bundle to package several individual products into a combined plan.",vocab:"Product Bundle, bundle, combined plan"},
+{zh:"行业云的 Guided Selling 功能可以引导销售人员选择合适的产品推荐给客户。",en:"The Guided Selling feature in Industry Cloud walks sales reps through recommending the right products to customers.",vocab:"Guided Selling, sales rep, product recommendation"},
+{zh:"这个 Eligibility Rules 配置决定了哪些客户可以看到哪些产品。",en:"This Eligibility Rules configuration determines which products are visible to which customers.",vocab:"Eligibility Rules, product visibility, customer"},
+{zh:"我们的解决方案基于 EPC，即 Enterprise Product Catalog，用来集中管理所有产品。",en:"Our solution is based on the EPC, or Enterprise Product Catalog, for centralized management of all products.",vocab:"EPC, Enterprise Product Catalog, centralized"},
+{zh:"这个 Subscription 对象记录了客户当前激活的服务和对应的计费周期。",en:"The Subscription object records the customer's currently active services and their billing cycles.",vocab:"Subscription, billing cycle, active service"},
+// ===== 461-480: 需求澄清与方案设计 =====
+{zh:"我理解这个需求的核心是自动化审批流程，对吗？我们先确认一下范围。",en:"My understanding is that the core requirement is automating the approval process. Is that right? Let's confirm the scope first.",vocab:"requirement, approval process, scope"},
+{zh:"这个需求用 Flow 就能实现，不一定非得写 Apex，可以节省开发时间。",en:"This can be done with a Flow and doesn't necessarily need Apex, which would save development time.",vocab:"Flow, Apex, no-code"},
+{zh:"这个场景有两个技术方案，一个用 LWC，一个用 Aura，LWC 是更推荐的方向。",en:"There are two options for this scenario: LWC or Aura. LWC is the recommended direction.",vocab:"LWC, Aura, recommendation"},
+{zh:"在动手开发之前，我建议先画一个流程图，让大家对方案有共同的理解。",en:"Before we start building, I'd suggest drawing a flow diagram so everyone's aligned on the approach.",vocab:"flow diagram, alignment, before development"},
+{zh:"这个需求我看了一下，涉及到数据安全，需要和安全团队讨论一下实现方式。",en:"I've looked at this requirement and it touches on data security. We need to discuss the implementation approach with the security team.",vocab:"data security, security team, requirement"},
+{zh:"方案 A 短期内开发快，但长期维护成本高；方案 B 前期投入多，但扩展性更好。",en:"Option A is faster to build short-term but more expensive to maintain. Option B has higher upfront cost but better scalability.",vocab:"trade-off, scalability, maintenance"},
+{zh:"我们需要明确这个功能的性能要求，比如每秒处理多少请求，这影响架构选择。",en:"We need to define the performance requirements for this feature, like requests per second, since that affects the architecture choices.",vocab:"performance requirement, architecture, requests per second"},
+{zh:"这个改动会影响现有的集成接口，需要通知下游系统的团队提前做好准备。",en:"This change will affect existing integration endpoints, so we need to notify the downstream system teams to prepare.",vocab:"downstream, integration, notification"},
+{zh:"需求里有几个模糊的地方，我列了一些问题清单，需要和 BA 对齐。",en:"There are a few ambiguous points in the requirements. I've put together a list of questions to clarify with the BA.",vocab:"ambiguous, requirements, clarify"},
+{zh:"这个方案我们做了一个 POC，验证了技术可行性，结果是可以的。",en:"We built a POC for this approach to validate technical feasibility, and the results look good.",vocab:"POC, proof of concept, feasibility"},
+{zh:"我们的设计需要考虑到未来可能的扩展需求，不要把方案做得太死。",en:"Our design needs to account for potential future expansion, so avoid painting ourselves into a corner.",vocab:"extensibility, future-proof, design"},
+{zh:"这个功能预计对 QA 有一定影响，需要提前告知 QA 团队准备测试用例。",en:"This feature will likely have some impact on QA. We should give the QA team a heads-up to prepare test cases.",vocab:"QA, test cases, impact"},
+{zh:"我建议把这个大功能拆成几个小的可交付的增量，逐步上线，降低风险。",en:"I'd suggest breaking this large feature into smaller deliverable increments to go live gradually and reduce risk.",vocab:"incremental delivery, risk reduction, phased"},
+{zh:"技术方案评审的时候需要所有相关团队都到场，避免后期出现遗漏。",en:"The technical design review needs all relevant teams present to avoid gaps showing up later.",vocab:"design review, technical review, stakeholders"},
+{zh:"这个需求的优先级是 P1，必须在本迭代结束前交付，没有协商空间。",en:"This requirement is P1 and must be delivered before the end of this iteration. There's no room to negotiate on that.",vocab:"P1, priority, iteration deadline"},
+{zh:"我们把非功能性需求也写进了设计文档里，比如性能指标和可用性要求。",en:"We included non-functional requirements in the design doc too, like performance targets and availability requirements.",vocab:"non-functional requirements, performance, availability"},
+{zh:"这个方案需要做容量规划，预估数据增长对系统性能的影响。",en:"This approach needs capacity planning to estimate how data growth will impact system performance.",vocab:"capacity planning, data growth, performance"},
+{zh:"我们评估了三个第三方集成方案，推荐用第二个，成本和功能最平衡。",en:"We evaluated three third-party integration options and recommend the second one. It has the best balance of cost and features.",vocab:"evaluation, trade-off, recommendation"},
+{zh:"这个接口的契约需要先确定好，前后端可以并行开发，节省时间。",en:"The interface contract needs to be locked in first so frontend and backend can develop in parallel and save time.",vocab:"interface contract, parallel development, API contract"},
+{zh:"我把这个方案的风险点也列出来了，每个风险都有对应的缓解措施。",en:"I've also listed the risk points for this approach, with mitigation measures for each.",vocab:"risk, mitigation, design document"},
+// ===== 481-500: 项目交付与复盘 =====
+{zh:"这次版本按时上线了，所有的验收标准都满足了，非常顺利。",en:"This release went live on schedule and met all the acceptance criteria. Really smooth.",vocab:"on schedule, acceptance criteria, release"},
+{zh:"上线后的第一个小时我们会持续监控关键指标，确认系统运行正常。",en:"For the first hour after go-live, we'll keep a close eye on key metrics to confirm everything is running fine.",vocab:"post go-live, monitoring, key metrics"},
+{zh:"这次项目里我们踩了不少坑，我整理了一份经验总结，分享给整个团队。",en:"We hit a lot of pitfalls in this project. I put together a lessons-learned doc to share with the whole team.",vocab:"lessons learned, pitfall, knowledge sharing"},
+{zh:"复盘的时候我们要聚焦在改进流程上，不是找人背锅。",en:"In the retrospective, let's focus on improving the process, not assigning blame.",vocab:"retrospective, process improvement, blame-free"},
+{zh:"我们这次上线有个小问题，影响了 20 个用户，已经在两小时内修复并重新部署了。",en:"There was a minor issue with this release that affected 20 users. We fixed it and redeployed within two hours.",vocab:"incident, hotfix, redeploy"},
+{zh:"文档更新了吗？每次功能变更都要同步更新技术文档和用户手册。",en:"Is the documentation updated? Every feature change needs to be reflected in both the tech docs and user guides.",vocab:"documentation, update, feature change"},
+{zh:"我们这次用的 CI/CD 流程大大减少了手工操作的错误，下次继续用这套机制。",en:"The CI/CD process we used this time significantly reduced manual errors. Let's keep using it going forward.",vocab:"CI/CD, manual error, process"},
+{zh:"有几个技术债项在这次迭代里没时间解决，我们把它们放进了下个季度的计划里。",en:"A few tech debt items didn't get resolved this iteration. We've added them to next quarter's plan.",vocab:"tech debt, backlog, next quarter"},
+{zh:"我们本次发布的 Release Note 需要提前给到客户，告知有哪些变更和影响。",en:"The Release Notes for this release need to go out to the client in advance so they're aware of the changes and impact.",vocab:"Release Notes, client communication, impact"},
+{zh:"这次代码覆盖率从 71% 提升到了 86%，测试质量有了显著改善。",en:"Code coverage improved from 71% to 86% this time, which is a solid improvement in test quality.",vocab:"code coverage, improvement, test quality"},
+{zh:"我们把这个功能做成了可配置的，客户可以自己在 Custom Settings 里调整参数。",en:"We made this feature configurable so clients can adjust the parameters themselves in Custom Settings.",vocab:"configurable, Custom Settings, client self-service"},
+{zh:"这次的性能优化把页面加载时间从 4 秒降到了 1.2 秒，用户体验大幅提升。",en:"The performance optimization brought page load time down from 4 seconds to 1.2 seconds. A big improvement in user experience.",vocab:"performance optimization, load time, UX"},
+{zh:"项目结束后我们做了一次知识转移，确保客户团队能独立维护和扩展系统。",en:"After the project wrapped up, we did a knowledge transfer to make sure the client team can maintain and extend the system on their own.",vocab:"knowledge transfer, handover, client team"},
+{zh:"这次迭代结束了，Sprint Review 的时候需要给 stakeholder 展示完成的功能。",en:"The iteration is done. We need to demo the completed features to stakeholders at the Sprint Review.",vocab:"Sprint Review, demo, stakeholder"},
+{zh:"我们本次上线了 12 个 Story，有 2 个延迟到了下个 Sprint，整体完成率不错。",en:"We shipped 12 stories this sprint and pushed 2 to the next. Overall velocity looks solid.",vocab:"velocity, shipped, sprint"},
+{zh:"这次跨团队协作很顺畅，提前对接了接口规范，避免了很多集成阶段的问题。",en:"The cross-team collaboration went really well this time. Aligning on the interface spec early avoided a lot of integration issues.",vocab:"cross-team, interface spec, collaboration"},
+{zh:"我们把每次上线的步骤做成了标准 Runbook，减少因为遗漏导致的失误。",en:"We documented each release step as a standard Runbook to reduce mistakes from missed steps.",vocab:"Runbook, deployment steps, standardize"},
+{zh:"这次需求范围控制得不好，加了很多 scope creep，下次需要更严格管理变更。",en:"Scope wasn't managed well this time and there was a lot of creep. We need stricter change control next time.",vocab:"scope creep, change management, control"},
+{zh:"我们用了自动化回归测试来保证每次发布不会破坏已有功能。",en:"We use automated regression tests to make sure each release doesn't break existing functionality.",vocab:"automated regression, existing functionality, release quality"},
+{zh:"感谢整个团队这个迭代的努力，我们按时交付了高质量的产品，干得漂亮！",en:"Thanks to the whole team for the hard work this iteration. We shipped quality work on time. Great job everyone!",vocab:"team appreciation, on-time delivery, quality"},
+];
+
+const CHAPTER_NAMES = [
+  "Apex 基础语法","SOQL & SOSL","触发器","测试类与覆盖率","Governor Limits",
+  "LWC 组件开发","LWC 事件通信","Salesforce 数据模型","安全与权限","API 集成",
+  "部署与 DevOps","Debug 排查","Git & Code Review","日常团队协作","OmniScript 基础",
+  "OmniScript 高级","FlexCards","DataRaptor","Integration Procedure","Calculation Procedures",
+  "OmniStudio 调试","OmniStudio 部署","Vlocity 行业云","需求与方案设计","项目交付复盘"
+];
+
+const PER_PAGE = 20;
+let chapters = [], deck = [], original = [], curChapter = 0, idx = 0;
+let shuffled = false, listOpen = false;
+
+window.addEventListener('DOMContentLoaded', () => {
+  // slice into chapters
+  for (let i = 0; i < sentences.length; i += PER_PAGE) {
+    chapters.push(sentences.slice(i, i + PER_PAGE));
+  }
+  // build tabs
+  const bar = document.getElementById('chapterBar');
+  chapters.forEach((_, ci) => {
+    const tab = document.createElement('div');
+    tab.className = 'cht-tab' + (ci === 0 ? ' active' : '');
+    tab.id = 'cht' + ci;
+    tab.textContent = (ci + 1) + '. ' + (CHAPTER_NAMES[ci] || '章节' + (ci + 1));
+    tab.onclick = () => loadChapter(ci);
+    bar.appendChild(tab);
+  });
+  loadChapter(0);
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space') { e.preventDefault(); flip(); }
+    else if (e.code === 'ArrowLeft') go(-1);
+    else if (e.code === 'ArrowRight') go(1);
+  });
+});
+
+function loadChapter(ci) {
+  curChapter = ci;
+  document.querySelectorAll('.cht-tab').forEach((t, i) => t.classList.toggle('active', i === ci));
+  document.getElementById('cht' + ci).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  original = [...chapters[ci]];
+  deck = [...original];
+  shuffled = false;
+  document.getElementById('btnShuffle').classList.remove('active');
+  idx = 0;
+  if (listOpen) buildList();
+  showCard();
+}
+
+function showCard() {
+  const card = document.getElementById('card');
+  card.classList.remove('flipped');
+  const s = deck[idx];
+  document.getElementById('cardZh').textContent = s.zh;
+  document.getElementById('cardEn').textContent = s.en;
+  const vr = document.getElementById('vocabRow');
+  vr.innerHTML = '';
+  (s.vocab || '').split(',').forEach(v => {
+    const t = v.trim();
+    if (t) {
+      const chip = document.createElement('span');
+      chip.className = 'vocab-chip';
+      chip.textContent = t;
+      vr.appendChild(chip);
+    }
+  });
+  const total = deck.length;
+  document.getElementById('navCount').textContent = (idx + 1) + ' / ' + total;
+  const pct = ((idx + 1) / total * 100).toFixed(1);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = pct + '%';
+  document.getElementById('btnPrev').disabled = idx === 0;
+  document.getElementById('btnNext').disabled = idx === total - 1;
+  // highlight in list
+  document.querySelectorAll('.list-item').forEach((el, i) => el.classList.toggle('current', i === idx));
+}
+
+function flip() {
+  document.getElementById('card').classList.toggle('flipped');
+}
+
+function go(dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= deck.length) return;
+  idx = newIdx;
+  showCard();
+  const el = document.querySelector('.list-item.current');
+  if (el) el.scrollIntoView({ block: 'nearest' });
+}
+
+function toggleShuffle() {
+  shuffled = !shuffled;
+  document.getElementById('btnShuffle').classList.toggle('active', shuffled);
+  if (shuffled) {
+    deck = [...original];
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+  } else {
+    deck = [...original];
+  }
+  idx = 0;
+  if (listOpen) buildList();
+  showCard();
+}
+
+function restart() {
+  idx = 0;
+  document.getElementById('card').classList.remove('flipped');
+  showCard();
+}
+
+function toggleList() {
+  listOpen = !listOpen;
+  const lv = document.getElementById('listView');
+  const lt = document.getElementById('listToggle');
+  if (listOpen) {
+    lv.classList.add('open');
+    lt.textContent = '▴ Hide chapter list';
+    buildList();
+  } else {
+    lv.classList.remove('open');
+    lt.textContent = '▾ Show chapter list';
+  }
+}
+
+function buildList() {
+  const lv = document.getElementById('listView');
+  lv.innerHTML = '';
+  deck.forEach((s, i) => {
+    const item = document.createElement('div');
+    item.className = 'list-item' + (i === idx ? ' current' : '');
+    item.innerHTML = '<div class="li-zh">' + s.zh + '</div><div class="li-en">' + s.en + '</div>';
+    item.onclick = () => { idx = i; showCard(); };
+    lv.appendChild(item);
+  });
+}
+</script>
+</body>
+</html>
